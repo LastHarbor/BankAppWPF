@@ -47,10 +47,10 @@ namespace BankApp.ViewModels.Base
 
         #region AddDepartment
 
-
         public ICommand AddDepartmentCommand { get; }
         private void OnAddDepartmentCommand(object p)
         {
+            var addDepartmentViewModel = new AddDepartmentViewModel(_departmentExtensions);
             var addDepartment = new AddDepartment();
             addDepartment.ShowDialog();
         }
@@ -61,7 +61,8 @@ namespace BankApp.ViewModels.Base
         #endregion
         public WorkspaceWindowViewModel(User? user, Department.DepartmentExtensions departmentExtensions)
         {
-            CheckUserCommand = new LambdaCommand(OnCheckUserCommand, CanCheckUserCommand);
+            AddDepartmentCommand = new LambdaCommand(OnAddDepartmentCommand, CanAddDepartmentCommand);
+            CheckUserCommand = new LambdaCommand(OnCheckUserCommand,CanCheckUserCommand);
             //Role
             CurrentUser = user;
             _departmentExtensions = departmentExtensions;

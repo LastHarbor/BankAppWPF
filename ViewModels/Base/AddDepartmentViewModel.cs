@@ -1,9 +1,17 @@
-﻿using System.Windows.Input;
+﻿using System.Collections.ObjectModel;
+using BankApp.Models;
+using System.Windows.Input;
+using BankApp.Extensions;
 
 namespace BankApp.ViewModels.Base;
 
 public class AddDepartmentViewModel : ViewModel
 {
+    #region DepartmentExtension
+
+    private Department.DepartmentExtensions _departmentExtension = new Department.DepartmentExtensions();
+
+    #endregion
     private string _departmentName;
 
     public string DepartmentName
@@ -16,11 +24,31 @@ public class AddDepartmentViewModel : ViewModel
 
 
     public ICommand AddDepartmentCommand { get; }
-    private void OnCommand(object p)
+    private void OnAddDepartmentCommand(object p)
     {
-
+        Department department = new()
+        {
+            Name = DepartmentName,
+            Clients = new ObservableCollection<Client>()
+        };
+        _departmentExtension.AddDepartment(department);
+        Extensions.Extensions.CloseWindow();
     }
-    private bool CanCommand(object p) => true;
+    private bool CanAddDepartmentCommand(object p) => true;
+
+    #endregion
+
+    #region Constructor
+
+    public AddDepartmentViewModel(Department.DepartmentExtensions departmentExtension)
+    {
+        #region Commands
+
+        AddDepartmentCommand = new LambdaCommand(OnAddDepartmentCommand, CanAddDepartmentCommand);
+
+            #endregion
+        _departmentExtension = departmentExtension;
+    }
 
     #endregion
 }

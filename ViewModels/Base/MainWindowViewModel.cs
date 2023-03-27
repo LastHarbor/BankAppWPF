@@ -11,7 +11,7 @@ namespace BankApp.ViewModels.Base
     {
         #region Collectiions
 
-        private Department.DepartmentExtensions _departmentExtension = new Department.DepartmentExtensions();
+        private Department.DepartmentExtensions _departmentExtension = new();
 
         #endregion
         #region Views
@@ -33,6 +33,7 @@ namespace BankApp.ViewModels.Base
 
         #endregion
         #region Commands
+
 
         public ICommand? OpenWorkspacewindowCommand { get; }
         private void OnOpenWorkspacewindowCommand(object p)
