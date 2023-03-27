@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeSnippet Format="1.0.0" xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+	<Header>
+		<Title>MvvmCommand</Title>
+		<Author>Anton</Author>
+		<Shortcut>mvvm</Shortcut>
+		<Description>ICommand mvvm snippet</Description>
+		<SnippetTypes>
+			<SnippetType>SurroundsWith</SnippetType>
+			<SnippetType>Expansion</SnippetType>
+		</SnippetTypes>
+	</Header>
+	<Snippet>
+		<Declarations>
+			<Literal>
+				<ID>имя</ID>
+				<Default>Command</Default>
+			</Literal>
+		</Declarations>
+		<Code Language="CSharp">
+			<![CDATA[public ICommand $имя$ { get; }
+        private void On$имя$(object p)
+        {
+        }
+        private bool Can$имя$(object p) => true;]]>
+		</Code>
+	</Snippet>
+</CodeSnippet>

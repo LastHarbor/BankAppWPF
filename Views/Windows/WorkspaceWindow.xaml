@@ -1,0 +1,66 @@
+﻿<Window x:Class="BankApp.Views.Windows.WorkspaceWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:base="clr-namespace:BankApp.ViewModels.Base"
+        mc:Ignorable="d"
+        Title="{Binding CurrentUser.Name}" 
+        Height="450" 
+        Width="800">
+    <DockPanel>
+        <Menu DockPanel.Dock="top">
+            <MenuItem Header="Файл">
+                <MenuItem Header="Открыть"></MenuItem>
+                <MenuItem Header="Сохранить как"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Действия">
+                <MenuItem Header="Добавить клиента"
+                          Command="{Binding AddClientCommand}"></MenuItem>
+                <MenuItem Header="Добавить департамент" Command="{Binding AddDepartmentCommand}"/>
+                <MenuItem Header="Сгенерировать данные" Command="{Binding GenerateDataCommand}"></MenuItem>
+            </MenuItem>
+            <MenuItem Header="Сменить пользователя"
+                      Command="{Binding ChangeUserCommand}"/>
+            <MenuItem Header="Проверить пользователя"
+                      Command="{Binding CheckUserCommand }"/>
+        </Menu>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="250"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <GroupBox Header="Департаменты"
+                      Grid.Column="0">
+                <ListBox ItemsSource="{Binding Departments}"
+                         DisplayMemberPath="Name"
+                         SelectedItem="{Binding SelectedDepartment}"></ListBox>
+            </GroupBox>
+            <GroupBox Grid.Column="1" Header="{Binding SelectedDepartment.Name,
+                FallbackValue='Клиенты',
+                TargetNullValue='Департамент не выбран'}">
+                <DataGrid 
+                    CanUserAddRows="False"
+                    IsSynchronizedWithCurrentItem="False"
+                    ItemsSource="{Binding SelectedDepartment.Clients}"
+                    AutoGenerateColumns="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID" Binding="{Binding ClientID}"/>
+                        <DataGridTextColumn Header="Имя" Binding="{Binding FirstName}"/>
+                        <DataGridTextColumn Header="Фамилия" Binding="{Binding Surname}"/>
+                        <DataGridTextColumn Header="Отчество" Binding="{Binding Patronimyc}"/>
+                        <DataGridTextColumn Header="Моб. Номер" Binding="{Binding MobileNums}"/>
+                        <DataGridTextColumn Header="Номер пасспорта" Binding="{Binding PassportNums}"/>
+                        <DataGridTextColumn Header="Департамент" Binding="{Binding DataContext.SelectedDepartment.Name, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </GroupBox>
+        </Grid>
+        <DockPanel.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Редактировать" Command="{Binding }"/>
+                <MenuItem Header="Удалить" Command="{Binding }"/>
+            </ContextMenu>
+        </DockPanel.ContextMenu>
+       </DockPanel>
+</Window>
