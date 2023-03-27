@@ -9,6 +9,11 @@ namespace BankApp.ViewModels.Base
 {
     public class MainWindowViewModel : ViewModel
     {
+        #region Collectiions
+
+        private Department.DepartmentExtensions _departmentExtension = new Department.DepartmentExtensions();
+
+        #endregion
         #region Views
 
         private readonly Window _workSpace = new WorkspaceWindow();
@@ -35,11 +40,11 @@ namespace BankApp.ViewModels.Base
             switch (CurrentUser!.Name)
             {
                 case "Консультант":
-                    _workSpace.DataContext = new WorkspaceWindowViewModel(CurrentUser);
+                    _workSpace.DataContext = new WorkspaceWindowViewModel(CurrentUser, _departmentExtension);
                     Extensions.Extensions.SetMainWindow(_workSpace);
                     break;
                 case "Менеджер":
-                    _workSpace.DataContext = new WorkspaceWindowViewModel(CurrentUser);
+                    _workSpace.DataContext = new WorkspaceWindowViewModel(CurrentUser, _departmentExtension);
                     Extensions.Extensions.SetMainWindow(_workSpace);
                     break;
             }

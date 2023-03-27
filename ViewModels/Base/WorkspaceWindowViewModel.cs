@@ -8,6 +8,11 @@ namespace BankApp.ViewModels.Base
 {
     public class WorkspaceWindowViewModel : ViewModel
     {
+        #region DepartmentExtensions
+
+        private Department.DepartmentExtensions _departmentExtensions;
+
+        #endregion
         #region Role
 
         private User? _currentUser;
@@ -19,7 +24,6 @@ namespace BankApp.ViewModels.Base
         }
 
         #endregion
-
         #region Commands
 
         #region CheckUser
@@ -55,11 +59,12 @@ namespace BankApp.ViewModels.Base
         #endregion
 
         #endregion
-        public WorkspaceWindowViewModel(User? user)
+        public WorkspaceWindowViewModel(User? user, Department.DepartmentExtensions departmentExtensions)
         {
             CheckUserCommand = new LambdaCommand(OnCheckUserCommand, CanCheckUserCommand);
             //Role
             CurrentUser = user;
+            _departmentExtensions = departmentExtensions;
             //
         }
 
