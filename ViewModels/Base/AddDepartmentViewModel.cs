@@ -9,19 +9,16 @@ public class AddDepartmentViewModel : ViewModel
 {
     #region DepartmentExtension
 
-    private Department.DepartmentExtensions _departmentExtension = new Department.DepartmentExtensions();
-
     #endregion
-    private string _departmentName;
+    private string? _departmentName;
 
-    public string DepartmentName
+    public string? DepartmentName
     {
         get => _departmentName;
         set => SetField(ref _departmentName, value);
     }
 
     #region AddDepartmentCommand
-
 
     public ICommand AddDepartmentCommand { get; }
     private void OnAddDepartmentCommand(object p)
@@ -31,8 +28,8 @@ public class AddDepartmentViewModel : ViewModel
             Name = DepartmentName,
             Clients = new ObservableCollection<Client>()
         };
-        _departmentExtension.AddDepartment(department);
-        Extensions.Extensions.CloseWindow();
+        Singleton.GetInstance().AddDepartment(department);
+        Extensions.Extensions.CloseDialog();
     }
     private bool CanAddDepartmentCommand(object p) => true;
 
@@ -40,14 +37,14 @@ public class AddDepartmentViewModel : ViewModel
 
     #region Constructor
 
-    public AddDepartmentViewModel(Department.DepartmentExtensions departmentExtension)
+    public AddDepartmentViewModel()
     {
         #region Commands
 
         AddDepartmentCommand = new LambdaCommand(OnAddDepartmentCommand, CanAddDepartmentCommand);
 
-            #endregion
-        _departmentExtension = departmentExtension;
+        #endregion
+        
     }
 
     #endregion

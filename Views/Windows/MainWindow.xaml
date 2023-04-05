@@ -17,7 +17,7 @@
             VerticalAlignment="Center" 
             Width="110"
             ItemsSource="{Binding Roles}"
-            SelectedItem="{Binding CurrentUser}"
+            SelectedItem="{Binding CurrentRole}"
             DisplayMemberPath="Name">
         </ComboBox>
         <Button 

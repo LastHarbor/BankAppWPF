@@ -5,27 +5,33 @@ namespace BankApp.Models;
 
 public class Department
 {
-    public string Name { get; set; }
-    public ObservableCollection<Client> Clients { get; set; }
+    public string? Name { get; set; }
+    public ObservableCollection<Client>? Clients { get; set; }
+}
 
-    public class DepartmentExtensions : ViewModel
+public class Singleton
+{
+    private static readonly Singleton _instance = new();
+    private readonly ObservableCollection<Department> _departments;
+
+    private Singleton()
     {
-        private ObservableCollection<Department> _departments = new ObservableCollection<Department>();
-
-        public ObservableCollection<Department> Departments
-        {
-            get =>  _departments;
-            set => SetField(ref _departments, value);
-        }
-
-        public void AddDepartment(Department department)
-        {
-            Departments.Add(department);
-        }
-
-        public void RemoveDepartment(Department department)
-        {
-            Departments.Remove(department);
-        }
+        _departments = new ObservableCollection<Department>();
     }
+
+    public static Singleton GetInstance()
+    {
+        return _instance;
+    }
+
+    public ObservableCollection<Department> GetDepartments()
+    {
+        return _departments;
+    }
+
+    public void AddDepartment(Department department)
+    {
+        _departments.Add(department);
+    }
+
 }

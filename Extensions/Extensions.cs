@@ -3,11 +3,13 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using BankApp.Models;
 
 namespace BankApp.Extensions;
 
-public class Extensions
+public static class Extensions
 {
+    public static User CurrentUser { get; set; }
     public static void CloseWindow()
     {
         Window? window = Application.Current.Windows.OfType<Window>().SingleOrDefault(w => w.IsActive);
@@ -23,13 +25,16 @@ public class Extensions
         }
     }
 
-    public static void SetMainWindow(Window window)
+    public static void SetMainWindow(Window newWindow)
     {
-        Application.Current.MainWindow?.Close();
-        Application.Current.MainWindow = window;
-        window.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-        window.Show();
+        var mainWindow = Application.Current.MainWindow;
+        Application.Current.MainWindow = newWindow;
+        newWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+        newWindow.Show();
+        mainWindow?.Close(); 
     }
+
+
 }
 
 public abstract class Command : ICommand

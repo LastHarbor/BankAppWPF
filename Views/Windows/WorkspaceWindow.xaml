@@ -3,11 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:base="clr-namespace:BankApp.ViewModels.Base"
         mc:Ignorable="d"
+        xmlns:base="clr-namespace:BankApp.ViewModels.Base"
         Title="{Binding CurrentUser.Name}" 
         Height="450" 
         Width="800">
+    <Window.DataContext>
+        <base:WorkspaceWindowViewModel/>
+    </Window.DataContext>
     <DockPanel>
         <Menu DockPanel.Dock="top">
             <MenuItem Header="Файл">
@@ -17,7 +20,8 @@
             <MenuItem Header="Действия">
                 <MenuItem Header="Добавить клиента"
                           Command="{Binding AddClientCommand}"></MenuItem>
-                <MenuItem Header="Добавить департамент" Command="{Binding AddDepartmentCommand}"/>
+                <MenuItem Header="Добавить департамент" Command="{Binding AddDepartmentCommand}"
+                          Visibility="{Binding}"/>
                 <MenuItem Header="Сгенерировать данные" Command="{Binding GenerateDataCommand}"></MenuItem>
             </MenuItem>
             <MenuItem Header="Сменить пользователя"
