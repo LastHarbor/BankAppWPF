@@ -9,7 +9,8 @@ namespace BankApp.Extensions;
 
 public static class Extensions
 {
-    public static User CurrentUser { get; set; }
+    public static User? CurrentUser { get; set; }
+
     public static void CloseWindow()
     {
         Window? window = Application.Current.Windows.OfType<Window>().SingleOrDefault(w => w.IsActive);
@@ -23,6 +24,18 @@ public static class Extensions
             window.DialogResult = true;
             window.Close();
         }
+    }
+    public static bool? ShowDialog(Window window)
+    {
+        if (window == null)
+        {
+            return false;
+        }
+
+        window.Owner = Application.Current.MainWindow;
+        window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+
+        return window.ShowDialog();
     }
 
     public static void SetMainWindow(Window newWindow)

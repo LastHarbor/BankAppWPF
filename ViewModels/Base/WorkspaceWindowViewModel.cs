@@ -9,30 +9,33 @@ namespace BankApp.ViewModels.Base
 {
     public class WorkspaceWindowViewModel : ViewModel
     {
-        #region ViewModels and Views
-        //Viewmodels
-        //Views
-            private readonly AddDepartment _addDepartment;
-        #endregion
         #region Collections
 
-        private ObservableCollection<Department>? _departments;
 
         public ObservableCollection<Department>? Departments
         {
-            get => _departments;
-            set => SetField(ref _departments, value);
+            get => Singleton.GetInstance().GetDepartments();
         }
 
         #endregion
+
         #region Singleton
 
         #endregion
-        #region Role
-
         
-        #endregion
         #region Commands
+
+        #region ChangeUser
+
+
+        public ICommand ChangeUserCommand { get; }
+        private void OnChangeUserCommand(object p)
+        {
+            Extensions.Extensions.SetMainWindow(new MainWindow());
+        }
+        private bool CanChangeUserCommand(object p) => true;
+
+        #endregion
 
         #region CheckUser
 
@@ -60,19 +63,22 @@ namespace BankApp.ViewModels.Base
             public ICommand AddDepartmentCommand { get; }
             private void OnAddDepartmentCommand(object p)
             {
-                _addDepartment.ShowDialog();
+                Extensions.Extensions.ShowDialog(new AddDepartment());
             }
             private bool CanAddDepartmentCommand(object p) => true;
 
         #endregion
 
         #endregion
-            public WorkspaceWindowViewModel()
-            {
-                AddDepartmentCommand = new LambdaCommand(OnAddDepartmentCommand, CanAddDepartmentCommand);
-                CheckUserCommand = new LambdaCommand(OnCheckUserCommand,CanCheckUserCommand);
-                
-            }
+        public WorkspaceWindowViewModel()
+        {
+            //Commands
+            AddDepartmentCommand = new LambdaCommand(OnAddDepartmentCommand, CanAddDepartmentCommand);
+            CheckUserCommand = new LambdaCommand(OnCheckUserCommand,CanCheckUserCommand);
+            ChangeUserCommand = new LambdaCommand(OnChangeUserCommand, CanChangeUserCommand);
+            //Fields
+            
+        }
 
     }
 }

@@ -16,7 +16,7 @@ namespace BankApp.ViewModels.Base
         #endregion
         #region Views and ViewModel
 
-        private readonly WorkspaceWindow _workSpace = new WorkspaceWindow();
+        private readonly WorkspaceWindow _workSpace = new ();
 
         #endregion
         #region Roles
@@ -35,13 +35,13 @@ namespace BankApp.ViewModels.Base
         #region Commands
 
 
-        public ICommand? OpenWorkspacewindowCommand { get; }
-        private void OnOpenWorkspacewindowCommand(object p)
+        public ICommand? OpenWorkspaceWindowCommand { get; }
+        private void OnOpenWorkspaceWindowCommand(object p)
         {
             Extensions.Extensions.SetMainWindow(_workSpace);
             Extensions.Extensions.CurrentUser = CurrentRole;
         }   
-        private bool CanOpenWorkspacewindowCommand(object p) => Roles.Any();
+        private bool CanOpenWorkspaceWindowCommand(object p) => true;
 
 
         #endregion
@@ -58,7 +58,7 @@ namespace BankApp.ViewModels.Base
             
 
             //
-            OpenWorkspacewindowCommand = new LambdaCommand(OnOpenWorkspacewindowCommand, CanOpenWorkspacewindowCommand);
+            OpenWorkspaceWindowCommand = new LambdaCommand(OnOpenWorkspaceWindowCommand, CanOpenWorkspaceWindowCommand);
         }
 
         #endregion

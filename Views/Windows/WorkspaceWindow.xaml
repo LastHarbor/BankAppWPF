@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         xmlns:base="clr-namespace:BankApp.ViewModels.Base"
-        Title="{Binding CurrentUser.Name}" 
+        Title="Главная"
         Height="450" 
         Width="800">
     <Window.DataContext>

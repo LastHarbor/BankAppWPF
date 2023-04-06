@@ -21,7 +21,7 @@
             DisplayMemberPath="Name">
         </ComboBox>
         <Button 
-            Command="{Binding OpenWorkspacewindowCommand}"
+            Command="{Binding OpenWorkspaceWindowCommand}"
             Content="Войти"
             Height="19" 
             Width="74" 

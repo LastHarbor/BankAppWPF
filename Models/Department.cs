@@ -11,7 +11,7 @@ public class Department
 
 public class Singleton
 {
-    private static readonly Singleton _instance = new();
+    private static readonly Singleton Instance = new();
     private readonly ObservableCollection<Department> _departments;
 
     private Singleton()
@@ -21,7 +21,7 @@ public class Singleton
 
     public static Singleton GetInstance()
     {
-        return _instance;
+        return Instance;
     }
 
     public ObservableCollection<Department> GetDepartments()
