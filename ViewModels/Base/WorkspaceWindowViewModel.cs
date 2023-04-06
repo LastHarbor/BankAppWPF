@@ -11,7 +11,6 @@ namespace BankApp.ViewModels.Base
     {
         #region Collections
 
-
         public ObservableCollection<Department>? Departments
         {
             get => Singleton.GetInstance().GetDepartments();
@@ -20,6 +19,33 @@ namespace BankApp.ViewModels.Base
         #endregion
 
         #region Singleton
+
+        #endregion
+
+        #region SelectedItem
+
+        private Department _selectedDepartment;
+        public Department SelectedDepartment 
+        { 
+            get => _selectedDepartment; 
+            set => SetField(ref _selectedDepartment, value);
+        }
+
+        #endregion
+
+        #region View
+
+        private bool _isManager = false;
+
+        public bool IsManager
+        {
+            get
+            {
+                if (Extensions.Extensions.CurrentUser.Name == "Консультант")
+                    return true;
+                return false;
+            }
+        }
 
         #endregion
         
@@ -69,6 +95,18 @@ namespace BankApp.ViewModels.Base
 
         #endregion
 
+        #region AddClient
+
+
+        public ICommand AddClientCommand { get; }
+        private void OnAddClientCommand(object p)
+        {
+            Extensions.Extensions.ShowDialog(new AddClient());
+        }
+        private bool CanAddClientCommand(object p) => true;
+
+        #endregion
+
         #endregion
         public WorkspaceWindowViewModel()
         {
@@ -76,8 +114,9 @@ namespace BankApp.ViewModels.Base
             AddDepartmentCommand = new LambdaCommand(OnAddDepartmentCommand, CanAddDepartmentCommand);
             CheckUserCommand = new LambdaCommand(OnCheckUserCommand,CanCheckUserCommand);
             ChangeUserCommand = new LambdaCommand(OnChangeUserCommand, CanChangeUserCommand);
+            AddClientCommand = new LambdaCommand(OnAddClientCommand, CanAddClientCommand);
             //Fields
-            
+
         }
 
     }

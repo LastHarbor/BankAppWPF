@@ -19,19 +19,28 @@
                             VerticalAlignment="Center"
                             Width="100">
                         <TextBlock Text="Имя"/>
-                        <TextBox Name="NameBox"></TextBox>
+                        <TextBox Name="NameBox"
+                                 Text="{Binding Name}"/>
                         <TextBlock Text="Фамилия"/>
-                        <TextBox Name="SurnameBox"></TextBox>
+                        <TextBox Name="SurnameBox"
+                                 Text="{Binding Surname}"/>
                         <TextBlock Text="Отчество"/>
-                        <TextBox Name="PatronimycBox"></TextBox>
+                        <TextBox Name="PatronimycBox"
+                                 Text="{Binding Patronimyc}"/>
                         <TextBlock Text="Номер телефона"/>
-                        <TextBox Name="PhoneNumberBox"></TextBox>
+                        <TextBox Name="PhoneNumberBox"
+                                 Text="{Binding MobileNumer}"/>
                         <TextBlock Text="Номер пасспорта"/>
-                        <TextBox Name="PassportNumberBox"></TextBox>
+                        <TextBox Name="PassportNumberBox"
+                                 Text="{Binding PassortNum}"/>
                         <TextBlock Text="Департамент"></TextBlock>
-                        <ComboBox></ComboBox>
+                        <ComboBox ItemsSource="{Binding Departments}"
+                                  SelectedItem="{Binding SelectedDepartment}"
+                                  DisplayMemberPath="Name"/>
                 </StackPanel>
                 <Button Grid.Row="1"
-                        Content="Добавить клиента" Click="{Binding}"></Button>
+                        Content="Добавить клиента" 
+                        Command="{Binding AddClientCommand}"
+                        />
         </Grid>
 </Window>

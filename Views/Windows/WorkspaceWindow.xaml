@@ -27,7 +27,9 @@
             <MenuItem Header="Сменить пользователя"
                       Command="{Binding ChangeUserCommand}"/>
             <MenuItem Header="Проверить пользователя"
-                      Command="{Binding CheckUserCommand }"/>
+
+                      Command="{Binding CheckUserCommand }"
+                      IsEnabled="{Binding IsManager}"/>
         </Menu>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -49,12 +51,12 @@
                     ItemsSource="{Binding SelectedDepartment.Clients}"
                     AutoGenerateColumns="False">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="ID" Binding="{Binding ClientID}"/>
-                        <DataGridTextColumn Header="Имя" Binding="{Binding FirstName}"/>
+                        <DataGridTextColumn Header="ID" Binding="{Binding ClientId}"/>
+                        <DataGridTextColumn Header="Имя" Binding="{Binding Name}"/>
                         <DataGridTextColumn Header="Фамилия" Binding="{Binding Surname}"/>
                         <DataGridTextColumn Header="Отчество" Binding="{Binding Patronimyc}"/>
-                        <DataGridTextColumn Header="Моб. Номер" Binding="{Binding MobileNums}"/>
-                        <DataGridTextColumn Header="Номер пасспорта" Binding="{Binding PassportNums}"/>
+                        <DataGridTextColumn Header="Моб. Номер" Binding="{Binding MobileNumber}"/>
+                        <DataGridTextColumn Header="Номер пасспорта" Binding="{Binding PassportNumber}"/>
                         <DataGridTextColumn Header="Департамент" Binding="{Binding DataContext.SelectedDepartment.Name, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
                     </DataGrid.Columns>
                 </DataGrid>
