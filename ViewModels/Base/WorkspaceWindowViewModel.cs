@@ -11,10 +11,7 @@ namespace BankApp.ViewModels.Base
     {
         #region Collections
 
-        public ObservableCollection<Department>? Departments
-        {
-            get => Singleton.GetInstance().GetDepartments();
-        }
+        public ObservableCollection<Department>? Departments => Singleton.GetInstance().GetDepartments();
 
         #endregion
 
@@ -24,7 +21,7 @@ namespace BankApp.ViewModels.Base
 
         #region SelectedItem
 
-        private Department _selectedDepartment;
+        private Department _selectedDepartment = null!;
         public Department SelectedDepartment 
         { 
             get => _selectedDepartment; 
@@ -36,15 +33,15 @@ namespace BankApp.ViewModels.Base
         #region View
 
         private bool _isManager = false;
-
         public bool IsManager
         {
             get
             {
-                if (Extensions.Extensions.CurrentUser.Name == "Консультант")
+                if (Extensions.Extensions.CurrentUser!.Name == "Консультант")
                     return true;
                 return false;
             }
+            set => SetField(ref _isManager, value);
         }
 
         #endregion
@@ -69,7 +66,7 @@ namespace BankApp.ViewModels.Base
 
             private void OnCheckUserCommand(object p)
             {
-            switch (Extensions.Extensions.CurrentUser.Name)
+            switch (Extensions.Extensions.CurrentUser!.Name)
                 {
                     case "Консультант":
                         MessageBox.Show("Вы вошли под консультантом");
