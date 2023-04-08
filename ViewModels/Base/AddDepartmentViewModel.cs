@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Linq;
 using BankApp.Models;
 using System.Windows.Input;
 using BankApp.Extensions;
@@ -10,8 +11,14 @@ public class AddDepartmentViewModel : ViewModel
     #region DepartmentExtension
 
     #endregion
-    private string? _departmentName;
+    private int _id;
 
+    public int ID
+    {
+        get => _id;
+        set => SetField(ref _id, value);
+    }
+    private string? _departmentName;
     public string? DepartmentName
     {
         get => _departmentName;
@@ -23,13 +30,29 @@ public class AddDepartmentViewModel : ViewModel
     public ICommand AddDepartmentCommand { get; }
     private void OnAddDepartmentCommand(object p)
     {
-        Department department = new()
+        using (var context = new DataContext())
         {
-            Name = DepartmentName,
-            Clients = new ObservableCollection<Client>()
-        };
-        Singleton.GetInstance().AddDepartment(department);
+            Department department = Singleton.GetInstance().GetDepartments().FirstOrDefault(d => d.Name == DepartmentName);
+            if (department == null)
+            {
+                department = new Department() 
+                { 
+                    Name = DepartmentName, 
+                    Id = ID,
+                };
+                context.Departments.Add(department);
+                context.SaveChanges();
+            }
+            Singleton.GetInstance().AddDepartment(department);
+        }
         Extensions.Extensions.CloseDialog();
+        //Department department = new()
+        //{
+        //    Name = DepartmentName,
+        //    Clients = new ObservableCollection<Client>()
+        //};
+        //Singleton.GetInstance().AddDepartment(department);
+        //Extensions.Extensions.CloseDialog();
     }
     private bool CanAddDepartmentCommand(object p) => true;
 

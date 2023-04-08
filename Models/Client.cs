@@ -14,6 +14,7 @@ namespace BankApp.Models
         public string Patronimyc { get; set; }
         public string MobileNumber { get; set; }
         public string PassportNumber { get; set;}
+        public int DepatmentId { get; set; }
         public Department Department { get; set; }
     }
 }

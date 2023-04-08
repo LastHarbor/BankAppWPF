@@ -29,10 +29,10 @@
                                  Text="{Binding Patronimyc}"/>
                         <TextBlock Text="Номер телефона"/>
                         <TextBox Name="PhoneNumberBox"
-                                 Text="{Binding MobileNumer}"/>
+                                 Text="{Binding MobileNumber}"/>
                         <TextBlock Text="Номер пасспорта"/>
                         <TextBox Name="PassportNumberBox"
-                                 Text="{Binding PassortNum}"/>
+                                 Text="{Binding PassportNum}"/>
                         <TextBlock Text="Департамент"></TextBlock>
                         <ComboBox ItemsSource="{Binding Departments}"
                                   SelectedItem="{Binding SelectedDepartment}"

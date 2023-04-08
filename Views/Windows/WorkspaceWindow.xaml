@@ -30,6 +30,18 @@
                       Command="{Binding CheckUserCommand }" /><!--IsEnabled="{Binding IsManager}"-->
         </Menu>
         <Grid>
+            <Grid.Resources>
+                <ContextMenu x:Key="listBoxContextMenu">
+                    <MenuItem Header="Удалить"
+                              Command="{Binding DeleteDepartmentCommand}"
+                              CommandParameter="{Binding SelectedDepartment}"/>
+                </ContextMenu>
+                <ContextMenu x:Key="dataGridContextMenu">
+                    <MenuItem Header="Удалить"
+                              Command="{Binding }"
+                              CommandParameter="{Binding SelectedClient}"/>
+                </ContextMenu>
+            </Grid.Resources>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="250"/>
                 <ColumnDefinition/>
@@ -38,9 +50,13 @@
                       Grid.Column="0">
                 <ListBox ItemsSource="{Binding Departments}"
                          DisplayMemberPath="Name"
-                         SelectedItem="{Binding SelectedDepartment}"></ListBox>
+                         SelectedItem="{Binding SelectedDepartment}">
+                    <ListBox.ContextMenu>
+                        <StaticResourceExtension ResourceKey="listBoxContextMenu"></StaticResourceExtension>
+                    </ListBox.ContextMenu>
+                </ListBox>
             </GroupBox>
-            <GroupBox Grid.Column="1" Header="{Binding SelectedDepartment.Name,
+            <GroupBox Grid.Column="1" Header="{Binding SelectedDepartment.Id,
                 FallbackValue='Клиенты',
                 TargetNullValue='Департамент не выбран'}">
                 <DataGrid 
@@ -57,14 +73,11 @@
                         <DataGridTextColumn Header="Номер пасспорта" Binding="{Binding PassportNumber}"/>
                         <DataGridTextColumn Header="Департамент" Binding="{Binding DataContext.SelectedDepartment.Name, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
                     </DataGrid.Columns>
+                    <DataGrid.ContextMenu>
+                        <StaticResourceExtension ResourceKey="dataGridContextMenu"></StaticResourceExtension>
+                    </DataGrid.ContextMenu>
                 </DataGrid>
             </GroupBox>
         </Grid>
-        <DockPanel.ContextMenu>
-            <ContextMenu>
-                <MenuItem Header="Редактировать" Command="{Binding }"/>
-                <MenuItem Header="Удалить" Command="{Binding }"/>
-            </ContextMenu>
-        </DockPanel.ContextMenu>
-       </DockPanel>
+    </DockPanel>
 </Window>

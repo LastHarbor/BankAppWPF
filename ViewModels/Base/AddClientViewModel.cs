@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows.Input;
 using BankApp.Extensions;
 using BankApp.Models;
@@ -26,18 +27,19 @@ public class AddClientViewModel : ViewModel
     #endregion
 
     #region Client
+
     
-    private int _clientId;
-    public int ClientId
-    {
-        get
-        {
-            _clientId = SelectedDepartment.Clients.Count;
-            _clientId++;
-            return _clientId;
-        }
-        set => SetField(ref _clientId, value);
-    }
+
+    //private int _clientId;
+    //public int ClientId
+    //{
+    //    get
+    //    {
+    //        _clientId = SelectedDepartment.Clients.Count;
+    //        return _clientId;
+    //    }
+    //    set => SetField(ref _clientId, value);
+    //}
     private string _name;
     public string Name
     {
@@ -61,18 +63,19 @@ public class AddClientViewModel : ViewModel
 
     private string _mobileNumber;
 
-    public string MobileNumer
+    public string MobileNumber
     {
         get => _mobileNumber; 
         set => SetField(ref _mobileNumber, value);
     }
 
     private string _passportNum;
-    public string PassortNum
+    public string PassportNum
     {
         get => _passportNum; 
         set=> SetField(ref _passportNum, value);
     }
+
 
     #endregion
 
@@ -81,16 +84,21 @@ public class AddClientViewModel : ViewModel
     public ICommand AddClientCommand { get; }
     private void OnAddClientCommand(object p)
     {
-        SelectedDepartment.Clients!.Add(new Client()
+        using (var context = new DataContext())
         {
-            Name = Name,
-            Surname = Surname,
-            Patronimyc = Patronimyc,
-            MobileNumber = MobileNumer,
-            PassportNumber = PassortNum,
-            Department = SelectedDepartment,
-            ClientId = ClientId
-        });
+            Client newClient = new Client()
+            {
+                Name = Name,
+                Surname = Surname,
+                Patronimyc = Patronimyc,
+                MobileNumber = MobileNumber,
+                PassportNumber = PassportNum,
+                DepartmentId = SelectedDepartment.Id
+            };
+            SelectedDepartment.Clients?.Add(newClient);
+            context.Clients.Add(newClient);
+            context.SaveChanges();
+        }
         Extensions.Extensions.CloseDialog();
     }
     private bool CanAddClientCommand(object p) => true;       

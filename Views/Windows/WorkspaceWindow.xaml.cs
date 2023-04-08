@@ -23,9 +23,5 @@ namespace BankApp.Views.Windows
         {
             InitializeComponent();
         }
-
-        private void UIElement_OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-        }
     }
 }
