@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Input;
+using BankApp.Data;
 using BankApp.Extensions;
 using BankApp.Models;
 
@@ -18,6 +19,7 @@ public class AddClientViewModel : ViewModel
     }
 
     #endregion
+
     #region Collections
 
     public ObservableCollection<Department> Departments
@@ -28,18 +30,6 @@ public class AddClientViewModel : ViewModel
 
     #region Client
 
-    
-
-    //private int _clientId;
-    //public int ClientId
-    //{
-    //    get
-    //    {
-    //        _clientId = SelectedDepartment.Clients.Count;
-    //        return _clientId;
-    //    }
-    //    set => SetField(ref _clientId, value);
-    //}
     private string _name;
     public string Name
     {
@@ -76,7 +66,6 @@ public class AddClientViewModel : ViewModel
         set=> SetField(ref _passportNum, value);
     }
 
-
     #endregion
 
     #region Commands
@@ -84,18 +73,18 @@ public class AddClientViewModel : ViewModel
     public ICommand AddClientCommand { get; }
     private void OnAddClientCommand(object p)
     {
+        Client newClient = new Client()
+        {
+            Name = Name,
+            Surname = Surname,
+            Patronimyc = Patronimyc,
+            MobileNumber = MobileNumber,
+            PassportNumber = PassportNum,
+            DepartmentId = SelectedDepartment.Id
+        };
+        SelectedDepartment.Clients?.Add(newClient);
         using (var context = new DataContext())
         {
-            Client newClient = new Client()
-            {
-                Name = Name,
-                Surname = Surname,
-                Patronimyc = Patronimyc,
-                MobileNumber = MobileNumber,
-                PassportNumber = PassportNum,
-                DepartmentId = SelectedDepartment.Id
-            };
-            SelectedDepartment.Clients?.Add(newClient);
             context.Clients.Add(newClient);
             context.SaveChanges();
         }

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using BankApp.Data;
 using BankApp.Extensions;
 using BankApp.Models;
 using BankApp.Views.Windows;
@@ -10,15 +11,12 @@ namespace BankApp.ViewModels.Base
 {
     public class MainWindowViewModel : ViewModel
     {
-        #region Collectiions
-
-
-        #endregion
         #region Views and ViewModel
 
         private readonly WorkspaceWindow _workSpace = new ();
 
         #endregion
+
         #region Roles
 
         private User _currentRole;
@@ -32,8 +30,8 @@ namespace BankApp.ViewModels.Base
 
 
         #endregion
-        #region Commands
 
+        #region Commands
 
         public ICommand? OpenWorkspaceWindowCommand { get; }
         private void OnOpenWorkspaceWindowCommand(object p)
@@ -42,7 +40,6 @@ namespace BankApp.ViewModels.Base
             Extensions.Extensions.CurrentUser = CurrentRole;
         }   
         private bool CanOpenWorkspaceWindowCommand(object p) => true;
-
 
         #endregion
         #region Constructor
@@ -55,8 +52,6 @@ namespace BankApp.ViewModels.Base
                 new User() { Name = "Консультант", Role = Role.Consultant },
                 new User() { Name = "Менеджер", Role = Role.Manager }
             };
-            
-
             //
             OpenWorkspaceWindowCommand = new LambdaCommand(OnOpenWorkspaceWindowCommand, CanOpenWorkspaceWindowCommand);
         }

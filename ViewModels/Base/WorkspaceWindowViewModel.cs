@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using BankApp.Data;
 using BankApp.Extensions;
 using BankApp.Models;
 using BankApp.Views.Windows;
@@ -57,6 +58,7 @@ namespace BankApp.ViewModels.Base
 
         #region Commands
 
+        #region DeleteDepartment
 
         public ICommand DeleteDepartmentCommand { get; }
         private void OnDeleteDepartmentCommand(object p)
@@ -67,17 +69,17 @@ namespace BankApp.ViewModels.Base
                 {
                     try
                     {
-                        // удаление департамента
+
                         context.Departments.Remove(SelectedDepartment);
                         context.SaveChanges();
                         SelectedDepartment.Clients.Clear();
                         Departments.Remove(SelectedDepartment);
 
-                        // проверка на количество оставшихся департаментов
+
                         var remainingDepartments = context.Departments.Count();
                         if (remainingDepartments == 0)
                         {
-                            // обнуление таблиц клиентов и департаментов
+
                             context.Database.ExecuteSqlRaw("DELETE FROM Clients");
                             context.Database.ExecuteSqlRaw("DELETE FROM Departments");
                             context.Database.ExecuteSqlRaw("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'Clients'");
@@ -90,11 +92,14 @@ namespace BankApp.ViewModels.Base
                         transaction.Rollback();
                         throw new Exception($"Failed to delete department: {ex.Message}");
                     }
-                    
+
                 }
             }
         }
         private bool CanDeleteDepartmentCommand(object p) => true;
+
+
+        #endregion
 
         #region ChangeUser
 
@@ -152,6 +157,34 @@ namespace BankApp.ViewModels.Base
 
         #endregion
 
+        #region DatabaseTest
+
+
+        public ICommand TestDbCommand { get; }
+        private void OnTestDbCommand(object p)
+        {
+            //using (var context = new DataContext())
+            //{
+            //    var department = new Department { Name = "IT Department", Id = 1};
+            //    var client = new Client
+            //    {
+            //        Name = "John",
+            //        Surname = "Doe",
+            //        Patronimyc = "Smith",
+            //        MobileNumber = "+123456789",
+            //        PassportNumber = "1234567890",
+            //        DepartmentId = department.Id
+            //    };
+            //    context.Departments.Add(department);
+            //    context.Clients.Add(client);
+            //    context.SaveChanges();
+            //    MessageBox.Show("Succesfully added");
+            //}
+        }
+        private bool CanTestDbCommand(object p) => true;
+
+        #endregion
+
         #endregion
         public WorkspaceWindowViewModel()
         {
@@ -162,7 +195,8 @@ namespace BankApp.ViewModels.Base
             AddClientCommand = new LambdaCommand(OnAddClientCommand, CanAddClientCommand);
             DeleteDepartmentCommand = new LambdaCommand(OnDeleteDepartmentCommand, CanDeleteDepartmentCommand);
             //Fields
-
+            //tests
+            TestDbCommand = new LambdaCommand(OnTestDbCommand, CanTestDbCommand);
         }
 
     }

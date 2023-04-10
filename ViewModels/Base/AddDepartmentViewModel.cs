@@ -2,6 +2,7 @@
 using System.Linq;
 using BankApp.Models;
 using System.Windows.Input;
+using BankApp.Data;
 using BankApp.Extensions;
 
 namespace BankApp.ViewModels.Base;
@@ -30,29 +31,13 @@ public class AddDepartmentViewModel : ViewModel
     public ICommand AddDepartmentCommand { get; }
     private void OnAddDepartmentCommand(object p)
     {
-        using (var context = new DataContext())
+        var department = new Department()
         {
-            Department department = Singleton.GetInstance().GetDepartments().FirstOrDefault(d => d.Name == DepartmentName);
-            if (department == null)
-            {
-                department = new Department() 
-                { 
-                    Name = DepartmentName, 
-                    Id = ID,
-                };
-                context.Departments.Add(department);
-                context.SaveChanges();
-            }
-            Singleton.GetInstance().AddDepartment(department);
-        }
+            Name = DepartmentName,
+            Id = ID,
+        };
+        Singleton.GetInstance().AddDepartment(department);
         Extensions.Extensions.CloseDialog();
-        //Department department = new()
-        //{
-        //    Name = DepartmentName,
-        //    Clients = new ObservableCollection<Client>()
-        //};
-        //Singleton.GetInstance().AddDepartment(department);
-        //Extensions.Extensions.CloseDialog();
     }
     private bool CanAddDepartmentCommand(object p) => true;
 

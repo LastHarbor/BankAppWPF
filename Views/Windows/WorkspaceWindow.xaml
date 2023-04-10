@@ -27,7 +27,9 @@
             <MenuItem Header="Сменить пользователя"
                       Command="{Binding ChangeUserCommand}"/>
             <MenuItem Header="Проверить пользователя"
-                      Command="{Binding CheckUserCommand }" /><!--IsEnabled="{Binding IsManager}"-->
+                      Command="{Binding CheckUserCommand }" />
+            <MenuItem Header="TestDb"
+                      Command="{Binding TestDbCommand}"/>
         </Menu>
         <Grid>
             <Grid.Resources>

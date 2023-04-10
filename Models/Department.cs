@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
+using BankApp.Data;
 using BankApp.ViewModels.Base;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,34 +8,25 @@ namespace BankApp.Models;
 
 public class Department
 {
+    public int Id { get; set; }
     public string? Name { get; set; }
-    public ObservableCollection<Client>? Clients { get; set; }
+    public ObservableCollection<Client>? Clients { get; set; } = new();
 
-    public Department()
-    {
-
-    }
 }
 
 public class Singleton
 {
     private static readonly Singleton Instance = new();
     private readonly ObservableCollection<Department> _departments;
+    private readonly DataContext _db = new();
 
     private Singleton()
     {
         _departments = new ObservableCollection<Department>();
-        if(_departments != null)
-        {using (var context = new DataContext())
-        {
-            var departments = context.Departments.Include(d => d.Clients).ToList();
-            foreach (var department in departments)
-            {
-                if (_departments.Any(d => d.Id == department.Id)) continue;
-                _departments.Add(department);
-            }
-        }}
-        
+        _db.Clients.Load();
+        _db.Departments.Load();
+        _departments = _db.Departments.Local.ToObservableCollection();
+
     }
 
     public static Singleton GetInstance()
@@ -50,6 +42,8 @@ public class Singleton
     public void AddDepartment(Department department)
     {
         _departments.Add(department);
+        _db.Departments.Add(department);
+        _db.SaveChanges();
     }
 
 }
