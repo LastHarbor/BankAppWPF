@@ -12,6 +12,7 @@ public class AddDepartmentViewModel : ViewModel
     #region DepartmentExtension
 
     #endregion
+
     private int _id;
 
     public int ID
@@ -52,7 +53,6 @@ public class AddDepartmentViewModel : ViewModel
         AddDepartmentCommand = new LambdaCommand(OnAddDepartmentCommand, CanAddDepartmentCommand);
 
         #endregion
-        
     }
 
     #endregion

@@ -14,10 +14,8 @@ public class DataContext : DbContext
     {
         Database.EnsureCreated();
     }
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        string dataFolder = Path.Combine(Directory.GetCurrentDirectory(), "Data");
-        optionsBuilder.UseSqlite($"Data Source={dataFolder}/BankApp.db");
-        optionsBuilder.EnableSensitiveDataLogging(true);
-    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
+        optionsBuilder.UseSqlite("Data Source=Data/BankApp.db");
+    
 }
