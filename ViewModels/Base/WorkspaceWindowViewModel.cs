@@ -61,9 +61,9 @@ namespace BankApp.ViewModels.Base
             ChangeUserCommand = new LambdaCommand(OnChangeUserCommand, CanChangeUserCommand);
             AddClientCommand = new LambdaCommand(OnAddClientCommand, CanAddClientCommand);
             DeleteDepartmentCommand = new LambdaCommand(OnDeleteDepartmentCommand, CanDeleteDepartmentCommand);
-            //Fields
+            
             //tests
-            TestDbCommand = new LambdaCommand(OnTestDbCommand, CanTestDbCommand);
+            //TestDbCommand = new LambdaCommand(OnTestDbCommand, CanTestDbCommand);
         }
 
         #region Commands
@@ -164,28 +164,28 @@ namespace BankApp.ViewModels.Base
         #endregion
 
         #region DatabaseTest
-        public ICommand TestDbCommand { get; }
-        private void OnTestDbCommand(object p)
-        {
-            //using (var context = new DataContext())
-            //{
-            //    var department = new Department { Name = "IT Department", Id = 1};
-            //    var client = new Client
-            //    {
-            //        Name = "John",
-            //        Surname = "Doe",
-            //        Patronimyc = "Smith",
-            //        MobileNumber = "+123456789",
-            //        PassportNumber = "1234567890",
-            //        DepartmentId = department.Id
-            //    };
-            //    context.Departments.Add(department);
-            //    context.Clients.Add(client);
-            //    context.SaveChanges();
-            //    MessageBox.Show("Succesfully added");
-            //}
-        }
-        private bool CanTestDbCommand(object p) => true;
+        //public ICommand TestDbCommand { get; }
+        //private void OnTestDbCommand(object p)
+        //{
+        //    //using (var context = new DataContext())
+        //    //{
+        //    //    var department = new Department { Name = "IT Department", Id = 1};
+        //    //    var client = new Client
+        //    //    {
+        //    //        Name = "John",
+        //    //        Surname = "Doe",
+        //    //        Patronimyc = "Smith",
+        //    //        MobileNumber = "+123456789",
+        //    //        PassportNumber = "1234567890",
+        //    //        DepartmentId = department.Id
+        //    //    };
+        //    //    context.Departments.Add(department);
+        //    //    context.Clients.Add(client);
+        //    //    context.SaveChanges();
+        //    //    MessageBox.Show("Succesfully added");
+        //    //}
+        //}
+        //private bool CanTestDbCommand(object p) => true;
 
         #endregion
 
