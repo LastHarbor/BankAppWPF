@@ -19,14 +19,18 @@ namespace BankApp.ViewModels.Base
 
         #region Roles
 
-        private User _currentRole;
-        public User CurrentRole
+        private User? _selectedRole;
+        public User SelectedRole
         {
-            get => _currentRole;
-            set => SetField(ref _currentRole, value);
+            get => _selectedRole!;
+            set => SetField(ref _selectedRole, value);
         }
 
-        public ObservableCollection<User> Roles { get; set; }
+        public ObservableCollection<User> Roles { get; set; } = new ()
+        {
+            new Manager(),
+            new Consultant()
+        };
 
 
         #endregion
@@ -36,23 +40,19 @@ namespace BankApp.ViewModels.Base
         public ICommand? OpenWorkspaceWindowCommand { get; }
         private void OnOpenWorkspaceWindowCommand(object p)
         {
+            
             Extensions.Extensions.SetMainWindow(_workSpace);
-            Extensions.Extensions.CurrentUser = CurrentRole;
+            var workspacewindowviewmodel = new WorkspaceWindowViewModel(SelectedRole);
+            _workSpace.DataContext = workspacewindowviewmodel;
         }   
-        private bool CanOpenWorkspaceWindowCommand(object p) => true;
+        private bool CanOpenWorkspaceWindowCommand(object p) => SelectedRole != null;
 
         #endregion
+
         #region Constructor
 
         public MainWindowViewModel()
         {
-            //UserRoles
-            Roles = new ObservableCollection<User>
-            {
-                new User() { Name = "Консультант", Role = Role.Consultant },
-                new User() { Name = "Менеджер", Role = Role.Manager }
-            };
-            //
             OpenWorkspaceWindowCommand = new LambdaCommand(OnOpenWorkspaceWindowCommand, CanOpenWorkspaceWindowCommand);
         }
 

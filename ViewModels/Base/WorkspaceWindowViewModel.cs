@@ -13,13 +13,24 @@ namespace BankApp.ViewModels.Base
 {
     public class WorkspaceWindowViewModel : ViewModel
     {
+        #region Fields
+
+        private User _currentUser;
+        public User? CurrentUser
+        {
+            get => _currentUser;
+            set => SetField(ref _currentUser, value);
+        }
+
+        public bool IsManager
+        {
+            get => CurrentUser!.IsEnabled;
+        }
+        #endregion
+
         #region Collections
 
         public ObservableCollection<Department>? Departments => Singleton.GetInstance().GetDepartments();
-
-        #endregion
-
-        #region Singleton
 
         #endregion
 
@@ -40,21 +51,20 @@ namespace BankApp.ViewModels.Base
 
         #endregion
 
-        #region View
-
-        private bool _isManager = false;
-        public bool IsManager
+        
+        public WorkspaceWindowViewModel(User currentUser)
         {
-            get
-            {
-                if (Extensions.Extensions.CurrentUser!.Name == "Консультант")
-                    return true;
-                return false;
-            }
-            set => SetField(ref _isManager, value);
+            this.CurrentUser = currentUser;
+            //Commands
+            AddDepartmentCommand = new LambdaCommand(OnAddDepartmentCommand, CanAddDepartmentCommand);
+            CheckUserCommand = new LambdaCommand(OnCheckUserCommand,CanCheckUserCommand);
+            ChangeUserCommand = new LambdaCommand(OnChangeUserCommand, CanChangeUserCommand);
+            AddClientCommand = new LambdaCommand(OnAddClientCommand, CanAddClientCommand);
+            DeleteDepartmentCommand = new LambdaCommand(OnDeleteDepartmentCommand, CanDeleteDepartmentCommand);
+            //Fields
+            //tests
+            TestDbCommand = new LambdaCommand(OnTestDbCommand, CanTestDbCommand);
         }
-
-        #endregion
 
         #region Commands
 
@@ -69,17 +79,15 @@ namespace BankApp.ViewModels.Base
                 {
                     try
                     {
-
                         context.Departments.Remove(SelectedDepartment);
                         context.SaveChanges();
-                        SelectedDepartment.Clients.Clear();
-                        Departments.Remove(SelectedDepartment);
+                        SelectedDepartment.Clients!.Clear();
+                        Departments!.Remove(SelectedDepartment);
 
 
-                        var remainingDepartments = context.Departments.Count();
+                        int remainingDepartments = context.Departments.Count();
                         if (remainingDepartments == 0)
                         {
-
                             context.Database.ExecuteSqlRaw("DELETE FROM Clients");
                             context.Database.ExecuteSqlRaw("DELETE FROM Departments");
                             context.Database.ExecuteSqlRaw("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'Clients'");
@@ -103,11 +111,11 @@ namespace BankApp.ViewModels.Base
 
         #region ChangeUser
 
-
         public ICommand ChangeUserCommand { get; }
         private void OnChangeUserCommand(object p)
         {
             Extensions.Extensions.SetMainWindow(new MainWindow());
+            CurrentUser = null;
         }
         private bool CanChangeUserCommand(object p) => true;
 
@@ -115,38 +123,36 @@ namespace BankApp.ViewModels.Base
 
         #region CheckUser
 
-            public ICommand CheckUserCommand { get; }
+        public ICommand CheckUserCommand { get; }
 
-            private void OnCheckUserCommand(object p)
+        private void OnCheckUserCommand(object p)
+        {
+            if (CurrentUser is Consultant)
             {
-            switch (Extensions.Extensions.CurrentUser!.Name)
-                {
-                    case "Консультант":
-                        MessageBox.Show("Вы вошли под консультантом");
-                    break;
-
-                    case "Менеджер":
-                        MessageBox.Show("Вы вошли под менеджером");
-                    break;
-                }
+                MessageBox.Show("Вы вошли под консультантом");
+            }
+            else if (CurrentUser is Manager)
+            {
+                MessageBox.Show("Вы вошли под менеджером");
             }
 
-            private bool CanCheckUserCommand(object p) => true;
+        }
+
+        private bool CanCheckUserCommand(object p) => true;
         #endregion
 
         #region AddDepartment
 
-            public ICommand AddDepartmentCommand { get; }
-            private void OnAddDepartmentCommand(object p)
-            {
-                Extensions.Extensions.ShowDialog(new AddDepartment());
-            }
-            private bool CanAddDepartmentCommand(object p) => true;
+        public ICommand AddDepartmentCommand { get; }
+        private void OnAddDepartmentCommand(object p)
+        {
+            Extensions.Extensions.ShowDialog(new AddDepartment());
+        }
+        private bool CanAddDepartmentCommand(object p) => true;
 
         #endregion
 
         #region AddClient
-
 
         public ICommand AddClientCommand { get; }
         private void OnAddClientCommand(object p)
@@ -158,8 +164,6 @@ namespace BankApp.ViewModels.Base
         #endregion
 
         #region DatabaseTest
-
-
         public ICommand TestDbCommand { get; }
         private void OnTestDbCommand(object p)
         {
@@ -186,18 +190,5 @@ namespace BankApp.ViewModels.Base
         #endregion
 
         #endregion
-        public WorkspaceWindowViewModel()
-        {
-            //Commands
-            AddDepartmentCommand = new LambdaCommand(OnAddDepartmentCommand, CanAddDepartmentCommand);
-            CheckUserCommand = new LambdaCommand(OnCheckUserCommand,CanCheckUserCommand);
-            ChangeUserCommand = new LambdaCommand(OnChangeUserCommand, CanChangeUserCommand);
-            AddClientCommand = new LambdaCommand(OnAddClientCommand, CanAddClientCommand);
-            DeleteDepartmentCommand = new LambdaCommand(OnDeleteDepartmentCommand, CanDeleteDepartmentCommand);
-            //Fields
-            //tests
-            TestDbCommand = new LambdaCommand(OnTestDbCommand, CanTestDbCommand);
-        }
-
     }
 }

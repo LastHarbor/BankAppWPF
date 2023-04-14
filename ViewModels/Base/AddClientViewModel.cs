@@ -81,7 +81,6 @@ public class AddClientViewModel : ViewModel
             MobileNumber = MobileNumber,
             PassportNumber = PassportNum,
             DepartmentId = SelectedDepartment.Id,
-            Department = SelectedDepartment
         };
         SelectedDepartment.Clients?.Add(newClient);
         using (var context = new DataContext())

@@ -4,44 +4,43 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        xmlns:base="clr-namespace:BankApp.ViewModels.Base"
         Title="Главная"
         Height="450" 
         Width="800">
-    <Window.DataContext>
-        <base:WorkspaceWindowViewModel/>
-    </Window.DataContext>
     <DockPanel>
-        <Menu DockPanel.Dock="top">
+        <Menu DockPanel.Dock="Top">
             <MenuItem Header="Файл">
                 <MenuItem Header="Открыть"></MenuItem>
                 <MenuItem Header="Сохранить как"></MenuItem>
             </MenuItem>
             <MenuItem Header="Действия">
                 <MenuItem Header="Добавить клиента"
-                          Command="{Binding AddClientCommand}"></MenuItem>
+                          Command="{Binding AddClientCommand}"
+                          IsEnabled="{Binding IsManager}"/>
                 <MenuItem Header="Добавить департамент" Command="{Binding AddDepartmentCommand}"
-                          Visibility="{Binding}"/>
-                <MenuItem Header="Сгенерировать данные" Command="{Binding GenerateDataCommand}"></MenuItem>
+                          IsEnabled="{Binding IsManager }"/>
             </MenuItem>
             <MenuItem Header="Сменить пользователя"
                       Command="{Binding ChangeUserCommand}"/>
             <MenuItem Header="Проверить пользователя"
                       Command="{Binding CheckUserCommand }" />
             <MenuItem Header="TestDb"
-                      Command="{Binding TestDbCommand}"/>
+                      Command="{Binding TestDbCommand}"
+                      IsEnabled="{Binding IsManager}"/>
         </Menu>
         <Grid>
             <Grid.Resources>
-                <ContextMenu x:Key="listBoxContextMenu">
+                <ContextMenu x:Key="ListBoxContextMenu">
                     <MenuItem Header="Удалить"
                               Command="{Binding DeleteDepartmentCommand}"
-                              CommandParameter="{Binding SelectedDepartment}"/>
+                              CommandParameter="{Binding SelectedDepartment}"
+                              IsEnabled="{Binding IsManager}"/>
                 </ContextMenu>
-                <ContextMenu x:Key="dataGridContextMenu">
+                <ContextMenu x:Key="DataGridContextMenu">
                     <MenuItem Header="Удалить"
                               Command="{Binding }"
-                              CommandParameter="{Binding SelectedClient}"/>
+                              CommandParameter="{Binding SelectedClient}"
+                              IsEnabled="{Binding IsManager}"/>
                 </ContextMenu>
             </Grid.Resources>
             <Grid.ColumnDefinitions>
@@ -54,11 +53,11 @@
                          DisplayMemberPath="Name"
                          SelectedItem="{Binding SelectedDepartment}">
                     <ListBox.ContextMenu>
-                        <StaticResourceExtension ResourceKey="listBoxContextMenu"></StaticResourceExtension>
+                        <StaticResourceExtension ResourceKey="ListBoxContextMenu"/>
                     </ListBox.ContextMenu>
                 </ListBox>
             </GroupBox>
-            <GroupBox Grid.Column="1" Header="{Binding SelectedDepartment.Id,
+            <GroupBox Grid.Column="1" Header="{Binding SelectedDepartment.Name,
                 FallbackValue='Клиенты',
                 TargetNullValue='Департамент не выбран'}">
                 <DataGrid 
@@ -76,10 +75,11 @@
                         <DataGridTextColumn Header="Департамент" Binding="{Binding DataContext.SelectedDepartment.Name, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
                     </DataGrid.Columns>
                     <DataGrid.ContextMenu>
-                        <StaticResourceExtension ResourceKey="dataGridContextMenu"></StaticResourceExtension>
+                        <StaticResourceExtension ResourceKey="DataGridContextMenu"></StaticResourceExtension>
                     </DataGrid.ContextMenu>
                 </DataGrid>
             </GroupBox>
         </Grid>
+
     </DockPanel>
 </Window>

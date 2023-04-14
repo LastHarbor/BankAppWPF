@@ -9,7 +9,6 @@ namespace BankApp.Extensions;
 
 public static class Extensions
 {
-    public static User? CurrentUser { get; set; }
 
     public static void CloseWindow()
     {
