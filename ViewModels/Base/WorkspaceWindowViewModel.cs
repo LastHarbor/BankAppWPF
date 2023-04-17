@@ -13,62 +13,46 @@ namespace BankApp.ViewModels.Base
 {
     public class WorkspaceWindowViewModel : ViewModel
     {
-        #region Fields
-
         private User _currentUser;
+        private Department _selectedDepartment = null!;
+        private Client _selectedClient = null!;
+
+
         public User? CurrentUser
         {
             get => _currentUser;
             set => SetField(ref _currentUser, value);
         }
-
         public bool IsManager
         {
             get => CurrentUser!.IsEnabled;
         }
-        #endregion
-
-        #region Collections
-
         public ObservableCollection<Department>? Departments => Singleton.GetInstance().GetDepartments();
-
-        #endregion
-
-        #region SelectedItem
-
-        private Department _selectedDepartment = null!;
-        public Department SelectedDepartment 
-        { 
-            get => _selectedDepartment; 
+        public Department SelectedDepartment
+        {
+            get => _selectedDepartment;
             set => SetField(ref _selectedDepartment, value);
         }
-        private Client _selectedClient = null!;
-        public Client SelectedClient 
-        { 
-            get => _selectedClient; 
+        public Client SelectedClient
+        {
+            get => _selectedClient;
             set => SetField(ref _selectedClient, value);
         }
 
-        #endregion
 
-        
         public WorkspaceWindowViewModel(User currentUser)
         {
             this.CurrentUser = currentUser;
             //Commands
             AddDepartmentCommand = new LambdaCommand(OnAddDepartmentCommand, CanAddDepartmentCommand);
-            CheckUserCommand = new LambdaCommand(OnCheckUserCommand,CanCheckUserCommand);
+            CheckUserCommand = new LambdaCommand(OnCheckUserCommand, CanCheckUserCommand);
             ChangeUserCommand = new LambdaCommand(OnChangeUserCommand, CanChangeUserCommand);
             AddClientCommand = new LambdaCommand(OnAddClientCommand, CanAddClientCommand);
             DeleteDepartmentCommand = new LambdaCommand(OnDeleteDepartmentCommand, CanDeleteDepartmentCommand);
-            
+
             //tests
-            //TestDbCommand = new LambdaCommand(OnTestDbCommand, CanTestDbCommand);
+            TestDbCommand = new LambdaCommand(OnTestDbCommand, CanTestDbCommand);
         }
-
-        #region Commands
-
-        #region DeleteDepartment
 
         public ICommand DeleteDepartmentCommand { get; }
         private void OnDeleteDepartmentCommand(object p)
@@ -107,9 +91,7 @@ namespace BankApp.ViewModels.Base
         private bool CanDeleteDepartmentCommand(object p) => true;
 
 
-        #endregion
-
-        #region ChangeUser
+      
 
         public ICommand ChangeUserCommand { get; }
         private void OnChangeUserCommand(object p)
@@ -119,12 +101,9 @@ namespace BankApp.ViewModels.Base
         }
         private bool CanChangeUserCommand(object p) => true;
 
-        #endregion
-
-        #region CheckUser
+       
 
         public ICommand CheckUserCommand { get; }
-
         private void OnCheckUserCommand(object p)
         {
             if (CurrentUser is Consultant)
@@ -135,13 +114,10 @@ namespace BankApp.ViewModels.Base
             {
                 MessageBox.Show("Вы вошли под менеджером");
             }
-
         }
 
         private bool CanCheckUserCommand(object p) => true;
-        #endregion
-
-        #region AddDepartment
+       
 
         public ICommand AddDepartmentCommand { get; }
         private void OnAddDepartmentCommand(object p)
@@ -150,9 +126,7 @@ namespace BankApp.ViewModels.Base
         }
         private bool CanAddDepartmentCommand(object p) => true;
 
-        #endregion
-
-        #region AddClient
+        
 
         public ICommand AddClientCommand { get; }
         private void OnAddClientCommand(object p)
@@ -161,34 +135,46 @@ namespace BankApp.ViewModels.Base
         }
         private bool CanAddClientCommand(object p) => true;
 
-        #endregion
 
-        #region DatabaseTest
-        //public ICommand TestDbCommand { get; }
-        //private void OnTestDbCommand(object p)
-        //{
-        //    //using (var context = new DataContext())
-        //    //{
-        //    //    var department = new Department { Name = "IT Department", Id = 1};
-        //    //    var client = new Client
-        //    //    {
-        //    //        Name = "John",
-        //    //        Surname = "Doe",
-        //    //        Patronimyc = "Smith",
-        //    //        MobileNumber = "+123456789",
-        //    //        PassportNumber = "1234567890",
-        //    //        DepartmentId = department.Id
-        //    //    };
-        //    //    context.Departments.Add(department);
-        //    //    context.Clients.Add(client);
-        //    //    context.SaveChanges();
-        //    //    MessageBox.Show("Succesfully added");
-        //    //}
-        //}
-        //private bool CanTestDbCommand(object p) => true;
+        //Введите нужно число в цикле для создания нужного количества шиентов
+        public ICommand TestDbCommand { get; }
+        private void OnTestDbCommand(object p)
+        {
 
-        #endregion
+            using (var context = new DataContext())
+            {
+                if (context.Departments.Count() != 0)
+                {
+                    MessageBox.Show("Сначала удалите все департаменты\n"
+                                    + $"Количество департаментов - {context.Departments.Count()}");
+                }
+                else if (!context.Departments.Any())
+                {
+                    var department = new Department { Name = "IT Department", Id = 1 };
+                    Departments!.Add(department);
+                    for (int i = 0; i < 100; i++)
+                    {
+                        var guid = Guid.NewGuid().ToString().Substring(0, 6);
+                        var client = new Client
+                        {
+                            Name = guid,
+                            Surname = guid,
+                            Patronimyc = guid,
+                            MobileNumber = guid,
+                            PassportNumber = guid,
+                            DepartmentId = department.Id
+                        };
+                        context.Clients.Add(client);
+                        department.Clients.Add(client);
+                    }
 
-        #endregion
+                    context.Departments.Add(department);
+                    context.SaveChanges();
+                    MessageBox.Show("Succesfully added");
+                }
+
+            }
+        }
+        private bool CanTestDbCommand(object p) => true;
     }
 }

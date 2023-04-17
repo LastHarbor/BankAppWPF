@@ -1,5 +1,7 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using BankApp.Data;
 using BankApp.ViewModels.Base;
 using Microsoft.EntityFrameworkCore;
@@ -22,11 +24,10 @@ public class Singleton
 
     private Singleton()
     {
-        _departments = new ObservableCollection<Department>();
-        _db.Clients.Load();
-        _db.Departments.Load();
-        _departments = _db.Departments.Local.ToObservableCollection();
-
+            _departments = new ObservableCollection<Department>();
+            _db.Clients.Load();
+            _db.Departments.Load();
+            _departments = _db.Departments.Local.ToObservableCollection();
     }
 
     public static Singleton GetInstance()
