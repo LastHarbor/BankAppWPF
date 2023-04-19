@@ -26,7 +26,7 @@
                                  Text="{Binding Surname}"/>
                         <TextBlock Text="Отчество"/>
                         <TextBox Name="PatronimycBox"
-                                 Text="{Binding Patronimyc}"/>
+                                 Text="{Binding Patronymic}"/>
                         <TextBlock Text="Номер телефона"/>
                         <TextBox Name="PhoneNumberBox"
                                  Text="{Binding MobileNumber}"/>

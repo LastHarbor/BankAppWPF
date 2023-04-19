@@ -1,20 +1,17 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using BankApp.Data;
 using BankApp.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Extensions;
 
 public static class Extensions
 {
-
-    public static void CloseWindow()
-    {
-        Window? window = Application.Current.Windows.OfType<Window>().SingleOrDefault(w => w.IsActive);
-        window?.Close();
-    }
     public static void CloseDialog()
     {
         var window = Application.Current.Windows.OfType<Window>().SingleOrDefault(w => w.IsActive);
@@ -30,7 +27,6 @@ public static class Extensions
         {
             return false;
         }
-
         window.Owner = Application.Current.MainWindow;
         window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
@@ -45,8 +41,45 @@ public static class Extensions
         newWindow.Show();
         mainWindow?.Close(); 
     }
+}
 
+public class Singleton
+{
+    private static readonly Singleton Instance = new();
+    private readonly ObservableCollection<Department> _departments;
+    private readonly DataContext _db = new();
 
+    private Singleton()
+    {
+        _departments = new ObservableCollection<Department>();
+        _db.Clients.Load();
+        _db.Departments.Load();
+        _departments = _db.Departments.Local.ToObservableCollection();
+    }
+
+    public static Singleton GetInstance()
+    {
+        return Instance;
+    }
+
+    public ObservableCollection<Department> GetDepartments()
+    {
+        return _departments;
+    }
+
+    public void AddDepartment(Department department)
+    {
+        _departments.Add(department);
+        _db.Departments.Add(department);
+        _db.SaveChanges();
+    }
+
+    public void AddClient(Department selectedDepartment, Client client)
+    {
+        selectedDepartment.Clients.Add(client);
+        _db.Clients.Add(client);
+        _db.SaveChanges();
+    }
 }
 
 public abstract class Command : ICommand

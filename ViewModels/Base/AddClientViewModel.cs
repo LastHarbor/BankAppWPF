@@ -44,11 +44,11 @@ public class AddClientViewModel : ViewModel
         set => SetField(ref _surname, value);
     }
 
-    private string _patronimyc;
-    public string Patronimyc 
+    private string _patronymic;
+    public string Patronymic 
     { 
-        get => _patronimyc; 
-        set=> SetField(ref _patronimyc, value);
+        get => _patronymic; 
+        set=> SetField(ref _patronymic, value);
     }
 
     private string _mobileNumber;
@@ -77,17 +77,12 @@ public class AddClientViewModel : ViewModel
         {
             Name = Name,
             Surname = Surname,
-            Patronimyc = Patronimyc,
+            Patronymic = Patronymic,
             MobileNumber = MobileNumber,
             PassportNumber = PassportNum,
             DepartmentId = SelectedDepartment.Id,
         };
-        SelectedDepartment.Clients?.Add(newClient);
-        using (var context = new DataContext())
-        {
-            context.Clients.Add(newClient);
-            context.SaveChanges();
-        }
+        Singleton.GetInstance().AddClient(SelectedDepartment, newClient);
         Extensions.Extensions.CloseDialog();
     }
     private bool CanAddClientCommand(object p) => true;       

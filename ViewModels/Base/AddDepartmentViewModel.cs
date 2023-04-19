@@ -9,26 +9,23 @@ namespace BankApp.ViewModels.Base;
 
 public class AddDepartmentViewModel : ViewModel
 {
-    #region DepartmentExtension
-
-    #endregion
-
     private int _id;
+    private string? _departmentName;
+
 
     public int ID
     {
         get => _id;
         set => SetField(ref _id, value);
     }
-    private string? _departmentName;
+    
     public string? DepartmentName
     {
         get => _departmentName;
         set => SetField(ref _departmentName, value);
     }
 
-    #region AddDepartmentCommand
-
+    
     public ICommand AddDepartmentCommand { get; }
     private void OnAddDepartmentCommand(object p)
     {
@@ -42,18 +39,11 @@ public class AddDepartmentViewModel : ViewModel
     }
     private bool CanAddDepartmentCommand(object p) => true;
 
-    #endregion
-
-    #region Constructor
 
     public AddDepartmentViewModel()
     {
-        #region Commands
-
         AddDepartmentCommand = new LambdaCommand(OnAddDepartmentCommand, CanAddDepartmentCommand);
-
-        #endregion
     }
 
-    #endregion
+   
 }

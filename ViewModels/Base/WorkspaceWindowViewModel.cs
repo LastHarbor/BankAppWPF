@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -16,6 +17,8 @@ namespace BankApp.ViewModels.Base
         private User _currentUser;
         private Department _selectedDepartment = null!;
         private Client _selectedClient = null!;
+        private static readonly DataContext DataContext = new();
+        private int _countOfDepartments;
 
 
         public User? CurrentUser
@@ -23,26 +26,35 @@ namespace BankApp.ViewModels.Base
             get => _currentUser;
             set => SetField(ref _currentUser, value);
         }
-        public bool IsManager
-        {
-            get => CurrentUser!.IsEnabled;
-        }
+
+        public bool IsManager => CurrentUser!.IsEnabled;
+        
         public ObservableCollection<Department>? Departments => Singleton.GetInstance().GetDepartments();
+
         public Department SelectedDepartment
         {
             get => _selectedDepartment;
             set => SetField(ref _selectedDepartment, value);
         }
+
         public Client SelectedClient
         {
             get => _selectedClient;
             set => SetField(ref _selectedClient, value);
         }
 
+        public int CountOfDepartments
+        {
+            get => _countOfDepartments;
+            set => SetField(ref _countOfDepartments, value);
+        }
+
 
         public WorkspaceWindowViewModel(User currentUser)
         {
-            this.CurrentUser = currentUser;
+            CurrentUser = currentUser;
+            Departments.CollectionChanged += Departments_CollectionChanged;
+            CountOfDepartments = Departments?.Count ?? 0;
             //Commands
             AddDepartmentCommand = new LambdaCommand(OnAddDepartmentCommand, CanAddDepartmentCommand);
             CheckUserCommand = new LambdaCommand(OnCheckUserCommand, CanCheckUserCommand);
@@ -57,41 +69,21 @@ namespace BankApp.ViewModels.Base
         public ICommand DeleteDepartmentCommand { get; }
         private void OnDeleteDepartmentCommand(object p)
         {
-            using (var context = new DataContext())
+            using (var transaction = DataContext.Database.BeginTransaction())
             {
-                using (var transaction = context.Database.BeginTransaction())
+                DataContext.Departments.Remove(SelectedDepartment);
+                DataContext.SaveChanges();
+                SelectedDepartment.Clients.Clear();
+                Departments!.Remove(SelectedDepartment);
+                if (!DataContext.Departments.Any())
                 {
-                    try
-                    {
-                        context.Departments.Remove(SelectedDepartment);
-                        context.SaveChanges();
-                        SelectedDepartment.Clients!.Clear();
-                        Departments!.Remove(SelectedDepartment);
-
-
-                        int remainingDepartments = context.Departments.Count();
-                        if (remainingDepartments == 0)
-                        {
-                            context.Database.ExecuteSqlRaw("DELETE FROM Clients");
-                            context.Database.ExecuteSqlRaw("DELETE FROM Departments");
-                            context.Database.ExecuteSqlRaw("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'Clients'");
-                            context.Database.ExecuteSqlRaw("UPDATE sqlite_sequence SET seq = 0 WHERE name = 'Departments'");
-                        }
-                        transaction.Commit();
-                    }
-                    catch (Exception ex)
-                    {
-                        transaction.Rollback();
-                        throw new Exception($"Failed to delete department: {ex.Message}");
-                    }
-
+                   ClearDatabase(DataContext);
                 }
+                transaction.Commit();
             }
         }
         private bool CanDeleteDepartmentCommand(object p) => true;
 
-
-      
 
         public ICommand ChangeUserCommand { get; }
         private void OnChangeUserCommand(object p)
@@ -99,9 +91,10 @@ namespace BankApp.ViewModels.Base
             Extensions.Extensions.SetMainWindow(new MainWindow());
             CurrentUser = null;
         }
+
         private bool CanChangeUserCommand(object p) => true;
 
-       
+
 
         public ICommand CheckUserCommand { get; }
         private void OnCheckUserCommand(object p)
@@ -117,22 +110,23 @@ namespace BankApp.ViewModels.Base
         }
 
         private bool CanCheckUserCommand(object p) => true;
-       
+
 
         public ICommand AddDepartmentCommand { get; }
         private void OnAddDepartmentCommand(object p)
         {
             Extensions.Extensions.ShowDialog(new AddDepartment());
         }
+
         private bool CanAddDepartmentCommand(object p) => true;
 
-        
 
         public ICommand AddClientCommand { get; }
         private void OnAddClientCommand(object p)
         {
             Extensions.Extensions.ShowDialog(new AddClient());
         }
+
         private bool CanAddClientCommand(object p) => true;
 
 
@@ -140,41 +134,46 @@ namespace BankApp.ViewModels.Base
         public ICommand TestDbCommand { get; }
         private void OnTestDbCommand(object p)
         {
-
-            using (var context = new DataContext())
+            if (!DataContext.Departments.Any())
             {
-                if (context.Departments.Count() != 0)
+                MessageBox.Show("Сначала создайте департамент");
+            }
+            else
+            {
+                for (int i = 0; i < 100; i++)
                 {
-                    MessageBox.Show("Сначала удалите все департаменты\n"
-                                    + $"Количество департаментов - {context.Departments.Count()}");
-                }
-                else if (!context.Departments.Any())
-                {
-                    var department = new Department { Name = "IT Department", Id = 1 };
-                    Departments!.Add(department);
-                    for (int i = 0; i < 100; i++)
+                    var guid = Guid.NewGuid().ToString().Substring(0, 6);
+                    var client = new Client
                     {
-                        var guid = Guid.NewGuid().ToString().Substring(0, 6);
-                        var client = new Client
-                        {
-                            Name = guid,
-                            Surname = guid,
-                            Patronimyc = guid,
-                            MobileNumber = guid,
-                            PassportNumber = guid,
-                            DepartmentId = department.Id
-                        };
-                        context.Clients.Add(client);
-                        department.Clients.Add(client);
-                    }
-
-                    context.Departments.Add(department);
-                    context.SaveChanges();
-                    MessageBox.Show("Succesfully added");
+                        Name = guid,
+                        Surname = guid,
+                        Patronymic = guid,
+                        MobileNumber = guid,
+                        PassportNumber = guid,
+                        DepartmentId = SelectedDepartment.Id
+                    };
+                    DataContext.Clients.Add(client);
+                    SelectedDepartment.Clients!.Add(client);
                 }
-
+                DataContext.SaveChanges();
+                MessageBox.Show("Succesfully added");
             }
         }
         private bool CanTestDbCommand(object p) => true;
+
+        private void ClearDatabase(DataContext dataContext)
+        {
+            dataContext.Database.ExecuteSqlRaw(@"
+            DELETE FROM Clients;
+            DELETE FROM Departments;
+            UPDATE sqlite_sequence SET seq = 0 WHERE name = 'Clients';
+            UPDATE sqlite_sequence SET seq = 0 WHERE name = 'Departments';
+            ");
+        }
+
+        private void Departments_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            CountOfDepartments = Departments?.Count ?? 0;
+        }
     }
 }

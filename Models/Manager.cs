@@ -1,6 +1,4 @@
-﻿using System.Xml.Linq;
-
-namespace BankApp.Models;
+﻿namespace BankApp.Models;
 
 public class Manager : User
 {
