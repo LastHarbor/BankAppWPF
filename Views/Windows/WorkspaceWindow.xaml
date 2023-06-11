@@ -58,6 +58,13 @@
                                 <Run Text="{Binding CoutOfClients}"/>
                             </TextBlock>
                         </TextBlock>
+                        <WrapPanel Margin="0,0,0,5">
+                            <Button Content="Добавить" 
+                                    Command="{Binding AddClientCommand}"
+                                    CommandParameter="{Binding SelectedDepartment}"/>
+                            <Button Content="Удалить"
+                                    CommandParameter="SelectedClient"/>
+                        </WrapPanel>
                     </StackPanel>
                 </GroupBox.Header>
                 <DataGrid 

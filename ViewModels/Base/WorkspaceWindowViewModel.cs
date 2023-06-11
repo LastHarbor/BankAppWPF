@@ -38,7 +38,7 @@ namespace BankApp.ViewModels.Base
             set => SetField(ref _clients, value);
         }
 
-        public User? CurrentUser
+        private User? CurrentUser
         {
             get => _currentUser;
             set => SetField(ref _currentUser!, value);
@@ -59,13 +59,13 @@ namespace BankApp.ViewModels.Base
             set => SetField(ref _selectedClient, value);
         }
 
-        private int CountOfDepartments
+        public int CountOfDepartments
         {
             get => _countOfDepartments;
             set => SetField(ref _countOfDepartments, value);
         }
 
-        private int CountOfClients
+        public int CountOfClients
         {
             get => _countOfClients;
             set => SetField(ref _countOfClients, value);
@@ -89,8 +89,6 @@ namespace BankApp.ViewModels.Base
         public WorkspaceWindowViewModel(User currentUser)
         {
             LoadDb();
-            Departments.CollectionChanged += Departments_CollectionChanged!;
-            CountOfDepartments = Departments?.Count ?? 0;
             this.CurrentUser = currentUser;
             //Commands
             AddDepartmentCommand = new LambdaCommand(OnAddDepartmentCommand, CanAddDepartmentCommand);
@@ -173,15 +171,10 @@ namespace BankApp.ViewModels.Base
 
         private void LoadDb()
         {
-            Departments.Clear();
-            Clients.Clear();
-
             Departments = new(_context.Departments.ToList()!);
             Departments.CollectionChanged += Departments_CollectionChanged!;
 
             CountOfDepartments = Departments.Count;
-
-
         }
 
         private void Departments_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

@@ -1,20 +1,17 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using BankApp.Data;
 using BankApp.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BankApp.Extensions;
 
 public static class Extensions
 {
-
-    public static void CloseWindow()
-    {
-        Window? window = Application.Current.Windows.OfType<Window>().SingleOrDefault(w => w.IsActive);
-        window?.Close();
-    }
     public static void CloseDialog()
     {
         var window = Application.Current.Windows.OfType<Window>().SingleOrDefault(w => w.IsActive);
@@ -30,7 +27,6 @@ public static class Extensions
         {
             return false;
         }
-
         window.Owner = Application.Current.MainWindow;
         window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
 
@@ -44,11 +40,6 @@ public static class Extensions
         newWindow.WindowStartupLocation = WindowStartupLocation.CenterScreen;
         newWindow.Show();
         mainWindow?.Close(); 
-    }
-
-    private static void AddDepartment(Department department)
-    {
-
     }
 }
 
