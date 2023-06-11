@@ -9,17 +9,14 @@ namespace BankApp.ViewModels.Base;
 
 public class AddDepartmentViewModel : ViewModel
 {
-    #region DepartmentExtension
-
-    #endregion
-
+    private DataContext _context;
     private int _id;
-
-    public int ID
+    public int Id
     {
         get => _id;
         set => SetField(ref _id, value);
     }
+
     private string? _departmentName;
     public string? DepartmentName
     {
@@ -35,9 +32,13 @@ public class AddDepartmentViewModel : ViewModel
         var department = new Department()
         {
             Name = DepartmentName,
-            Id = ID,
+            Id = Id,
         };
-        Singleton.GetInstance().AddDepartment(department);
+        using (_context = new DataContext())
+        {
+            _context.Departments.Add(department);
+            _context.SaveChanges();
+        }
         Extensions.Extensions.CloseDialog();
     }
     private bool CanAddDepartmentCommand(object p) => true;

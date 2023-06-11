@@ -20,14 +20,6 @@ public class AddClientViewModel : ViewModel
 
     #endregion
 
-    #region Collections
-
-    public ObservableCollection<Department> Departments
-    {
-        get => Singleton.GetInstance().GetDepartments();
-    }
-    #endregion
-
     #region Client
 
     private string _name;

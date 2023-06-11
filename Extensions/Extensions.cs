@@ -46,7 +46,10 @@ public static class Extensions
         mainWindow?.Close(); 
     }
 
+    private static void AddDepartment(Department department)
+    {
 
+    }
 }
 
 public abstract class Command : ICommand

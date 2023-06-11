@@ -13,53 +13,53 @@
                 <MenuItem Header="Открыть"></MenuItem>
                 <MenuItem Header="Сохранить как"></MenuItem>
             </MenuItem>
-            <MenuItem Header="Действия">
-                <MenuItem Header="Добавить клиента"
-                          Command="{Binding AddClientCommand}"
-                          IsEnabled="{Binding IsManager}"/>
-                <MenuItem Header="Добавить департамент" Command="{Binding AddDepartmentCommand}"
-                          IsEnabled="{Binding IsManager }"/>
-            </MenuItem>
             <MenuItem Header="Сменить пользователя"
                       Command="{Binding ChangeUserCommand}"/>
-            <MenuItem Header="Проверить пользователя"
-                      Command="{Binding CheckUserCommand }" />
-            <MenuItem Header="TestDb"
+            <!--<MenuItem Header="TestDb"
                       Command="{Binding TestDbCommand}"
-                      IsEnabled="{Binding IsManager}"/>
+                      IsEnabled="{Binding IsManager}"/>-->
         </Menu>
         <Grid>
-            <Grid.Resources>
-                <ContextMenu x:Key="ListBoxContextMenu">
-                    <MenuItem Header="Удалить"
-                              Command="{Binding DeleteDepartmentCommand}"
-                              CommandParameter="{Binding SelectedDepartment}"
-                              IsEnabled="{Binding IsManager}"/>
-                </ContextMenu>
-                <ContextMenu x:Key="DataGridContextMenu">
-                    <MenuItem Header="Удалить"
-                              Command="{Binding }"
-                              CommandParameter="{Binding SelectedClient}"
-                              IsEnabled="{Binding IsManager}"/>
-                </ContextMenu>
-            </Grid.Resources>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="250"/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <GroupBox Header="Департаменты"
-                      Grid.Column="0">
-                <ListBox ItemsSource="{Binding Departments}"
-                         DisplayMemberPath="Name"
-                         SelectedItem="{Binding SelectedDepartment}">
-                    <ListBox.ContextMenu>
-                        <StaticResourceExtension ResourceKey="ListBoxContextMenu"/>
-                    </ListBox.ContextMenu>
-                </ListBox>
+            <GroupBox Grid.Column="0">
+                <GroupBox.Header>
+                    <TextBlock>
+                        <Run Text="Департаменты - "/>
+                        <Run Text="{Binding CountOfDepartments}"/>
+                    </TextBlock>
+                </GroupBox.Header>
+                <DockPanel>
+                    <UniformGrid DockPanel.Dock="Bottom" Rows="1">
+                        <Button Content="Добавить" Command="{Binding AddDepartmentCommand}"
+                                IsEnabled="{Binding IsManager}"/>
+                        <Button Content="Удалить" Command="{Binding DeleteDepartmentCommand}"
+                                CommandParameter="{Binding SelectedDepartment}"
+                                IsEnabled="{Binding IsManager}"/>
+                    </UniformGrid>
+                    <ListBox ItemsSource="{Binding Departments}"
+                             DisplayMemberPath="Name"
+                             SelectedItem="{Binding SelectedDepartment, Mode=TwoWay}">
+                    </ListBox>
+                </DockPanel>
             </GroupBox>
-            <GroupBox Grid.Column="1" Header="{Binding SelectedDepartment.Name,
-                FallbackValue='Клиенты',
-                TargetNullValue='Департамент не выбран'}">
+            <GroupBox Grid.Column="1">
+                <GroupBox.Header>
+                    <StackPanel>
+                         <TextBlock>
+                             <Run Text="Клиенты департамента - "/>
+                             <Run Text="{Binding SelectedDepartment.Name}"/>
+                         </TextBlock>
+                        <TextBlock>
+                            <TextBlock>
+                                <Run Text="Количество - "/>
+                                <Run Text="{Binding CoutOfClients}"/>
+                            </TextBlock>
+                        </TextBlock>
+                    </StackPanel>
+                </GroupBox.Header>
                 <DataGrid 
                     CanUserAddRows="False"
                     IsSynchronizedWithCurrentItem="False"
@@ -74,9 +74,6 @@
                         <DataGridTextColumn Header="Номер пасспорта" Binding="{Binding PassportNumber}"/>
                         <DataGridTextColumn Header="Департамент" Binding="{Binding DataContext.SelectedDepartment.Name, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
                     </DataGrid.Columns>
-                    <DataGrid.ContextMenu>
-                        <StaticResourceExtension ResourceKey="DataGridContextMenu"></StaticResourceExtension>
-                    </DataGrid.ContextMenu>
                 </DataGrid>
             </GroupBox>
         </Grid>
