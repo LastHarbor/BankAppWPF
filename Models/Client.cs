@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BankApp.Models
+﻿namespace BankApp.Models
 {
-    public class Client
+    public sealed class Client
     {
         public int ClientId { get; set; }
         public string Name { get; set; }
@@ -16,7 +10,7 @@ namespace BankApp.Models
         public string PassportNumber { get; set;}
         public int DepartmentId { get; set; }
 
-        public virtual Department Department { get; set; }
+        public Department Department { get; set; }
         
     }
 }

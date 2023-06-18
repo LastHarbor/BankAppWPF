@@ -6,10 +6,7 @@
         xmlns:base="clr-namespace:BankApp.ViewModels.Base"
         mc:Ignorable="d"
         Title="AddClient" Height="303" Width="229">
-        <Window.DataContext>
-                <base:AddClientViewModel/>
-        </Window.DataContext>
-        <Grid>
+    <Grid>
                 <Grid.RowDefinitions>
                         <RowDefinition Height="*"></RowDefinition>
                         <RowDefinition Height="30"></RowDefinition>
@@ -34,9 +31,7 @@
                         <TextBox Name="PassportNumberBox"
                                  Text="{Binding PassportNum}"/>
                         <TextBlock Text="Департамент"></TextBlock>
-                        <ComboBox ItemsSource="{Binding Departments}"
-                                  SelectedItem="{Binding SelectedDepartment}"
-                                  DisplayMemberPath="Name"/>
+                        <TextBlock Text="{Binding SelectedDepartment.Name}"/>
                 </StackPanel>
                 <Button Grid.Row="1"
                         Content="Добавить клиента" 
