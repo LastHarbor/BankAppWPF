@@ -31,7 +31,6 @@ namespace BankApp.ViewModels.Base
                 }
             }
         }
-
         public ObservableCollection<User> Roles { get; set; } = new ()
         {
             new Manager(),

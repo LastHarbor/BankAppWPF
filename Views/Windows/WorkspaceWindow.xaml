@@ -81,13 +81,16 @@
                     ItemsSource="{Binding SelectedDepartment.Clients}"
                     AutoGenerateColumns="False">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="ID" Binding="{Binding ClientId}"/>
+                        <DataGridTextColumn Header="ID" Binding="{Binding ClientId}" 
+                                            IsReadOnly="True"/>
                         <DataGridTextColumn Header="Имя" Binding="{Binding Name}"/>
                         <DataGridTextColumn Header="Фамилия" Binding="{Binding Surname}"/>
                         <DataGridTextColumn Header="Отчество" Binding="{Binding Patronimyc}"/>
                         <DataGridTextColumn Header="Моб. Номер" Binding="{Binding MobileNumber}"/>
                         <DataGridTextColumn Header="Номер пасспорта" Binding="{Binding PassportNumber}"/>
-                        <DataGridTextColumn Header="Департамент" Binding="{Binding DataContext.SelectedDepartment.Name, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+                        <DataGridTextColumn Header="Департамент" Binding="{Binding DataContext.SelectedDepartment.Name, 
+                            RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            IsReadOnly="True"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </GroupBox>

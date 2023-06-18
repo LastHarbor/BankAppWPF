@@ -24,8 +24,7 @@ public class AddDepartmentViewModel : ViewModel
         set => SetField(ref _departmentName, value);
     }
 
-    #region AddDepartmentCommand
-
+    
     public ICommand AddDepartmentCommand { get; }
     private void OnAddDepartmentCommand(object p)
     {
@@ -43,18 +42,11 @@ public class AddDepartmentViewModel : ViewModel
     }
     private bool CanAddDepartmentCommand(object p) => true;
 
-    #endregion
-
-    #region Constructor
 
     public AddDepartmentViewModel()
     {
-        #region Commands
-
         AddDepartmentCommand = new LambdaCommand(OnAddDepartmentCommand, CanAddDepartmentCommand);
-
-        #endregion
     }
 
-    #endregion
+   
 }
