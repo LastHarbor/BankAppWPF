@@ -9,15 +9,32 @@ namespace BankApp.ViewModels.Base;
 
 public class AddClientViewModel : ViewModel
 {
+    private DataContext _context;
     private Department _selectedDepartment;
+    private int _depId;
+
 
     public Department SelectedDepartment
     {
         get => _selectedDepartment;
         set => SetField(ref _selectedDepartment, value);
     }
+    public int DepId
+    {
+        get => SelectedDepartment.Id;
+        set => _depId = value;
+    }
+
 
     #region Client
+
+    private int _clientId;
+
+    public int ClientId
+    {
+        get => _clientId;
+        set => SetField(ref _clientId, value);
+    }
 
     private string _name;
 
@@ -61,21 +78,26 @@ public class AddClientViewModel : ViewModel
 
     #endregion
 
-
-
     public ICommand AddClientCommand { get; }
 
     private void OnAddClientCommand(object p)
     {
         Client newClient = new Client()
         {
+            ClientId = ClientId,
             Name = Name,
             Surname = Surname,
             Patronymic = Patronymic,
             MobileNumber = MobileNumber,
             PassportNumber = PassportNum,
-            DepartmentId = SelectedDepartment.Id,
+            DepartmentId = DepId,
+            
         };
+        using (_context = new DataContext())
+        {
+            _context.Clients.Add(newClient);
+            _context.SaveChangesAsync();
+        }
         Extensions.Extensions.CloseDialog();
     }
 

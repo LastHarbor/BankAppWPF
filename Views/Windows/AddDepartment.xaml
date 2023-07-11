@@ -3,13 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:BankApp.Views.Windows"
-        xmlns:base ="clr-namespace:BankApp.ViewModels.Base"
+        xmlns:base="clr-namespace:BankApp.ViewModels.Base"
         mc:Ignorable="d"
         Title="Добавить дпартамент" Height="220" Width="200">
-        <Window.DataContext>
-            <base:AddDepartmentViewModel/>
-        </Window.DataContext>
+    <Window.DataContext>
+        <base:AddDepartmentViewModel/>
+    </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"></RowDefinition>

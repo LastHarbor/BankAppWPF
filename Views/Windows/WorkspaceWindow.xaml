@@ -19,6 +19,8 @@
             </MenuItem>
             <MenuItem Header="Сменить пользователя"
                       Command="{Binding ChangeUserCommand}"/>
+            <MenuItem Header="Очистить базу данных"
+                      Command="{Binding ClearDatabaseCommand}"/>
         </Menu>
         <Grid>
             <Grid.ColumnDefinitions>
@@ -36,7 +38,7 @@
                     <UniformGrid DockPanel.Dock="Bottom" Rows="1">
                         <Button Content="Добавить" Command="{Binding AddDepartmentCommand}"
                                 IsEnabled="{Binding IsManager}"/>
-                        <Button Content="Удалить" Command="{Binding DeleteDepartmentCommand}"
+                        <Button Content="Удалить" Command="{Binding DeleteCommand}"
                                 CommandParameter="{Binding SelectedDepartment}"
                                 IsEnabled="{Binding IsManager}"/>
                     </UniformGrid>
@@ -56,7 +58,7 @@
                         <TextBlock>
                             <TextBlock>
                                 <Run Text="Количество - "/>
-                                <Run Text="{Binding CoutOfClients}"/>
+                                <Run Text="{Binding CountOfClients}"/>
                             </TextBlock>
                         </TextBlock>
                         <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
@@ -65,10 +67,11 @@
                                     CommandParameter="{Binding SelectedDepartment}"
                                     IsEnabled="{Binding IsManager}"/>
                             <Button Content="Удалить"
-                                    CommandParameter="{Binding SelectedClient}"
+                                    Command="{Binding DeleteCommand}"
+                                    CommandParameter="{Binding  SelectedClient}"
                                     IsEnabled="{Binding IsManager}"/>
                             <Button Content="Очистить и сохранить"
-                                    Command="{Binding}"
+                                    Command="{Binding ClearClientsCommand}"
                                     CommandParameter="{Binding SelectedDepartment}"
                                     IsEnabled="{Binding IsManager}"
                                     />
@@ -79,7 +82,8 @@
                     CanUserAddRows="False"
                     IsSynchronizedWithCurrentItem="False"
                     ItemsSource="{Binding SelectedDepartment.Clients}"
-                    AutoGenerateColumns="False">
+                    AutoGenerateColumns="False"
+                    SelectedItem="{Binding SelectedClient}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="ID" Binding="{Binding ClientId}" 
                                             IsReadOnly="True"/>

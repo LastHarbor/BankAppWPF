@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using BankApp.Data;
@@ -71,19 +72,40 @@ public class WorkspaceWindowViewModel : ViewModel
         set => SetField(ref _countOfClients, value);
     }
 
-    public ICommand DeleteDepartmentCommand { get; }
+    private void OnClearClientsCommand(object p)
+    {
+        ClearClients();
+    }
+
+    public ICommand DeleteCommand { get; }
     public ICommand ChangeUserCommand { get; }
     public ICommand AddDepartmentCommand { get; }
     public ICommand CheckUserCommand { get; }
     public ICommand AddClientCommand { get; }
     public ICommand TestDbCommand { get; }
+    public ICommand ClearDatabaseCommand { get; }
+    public ICommand ClearClientsCommand { get; }
 
-    private bool CanDeleteDepartmentCommand(object p) => p is Department department && Departments!.Contains(department);
     private bool CanChangeUserCommand(object p) => true;
     private bool CanCheckUserCommand(object p) => true;
     private bool CanAddDepartmentCommand(object p) => true;
     private bool CanAddClientCommand(object p) => SelectedDepartment != null;
     private bool CanTestDbCommand(object p) => true;
+    private bool CanClearDatabaseCommand(object p) => true;
+    private bool CanClearClientsCommand(object p) => SelectedDepartment !=null;
+    private bool CanDeleteCommand(object p)
+    {
+        if (p is Department department)
+        {
+            return Departments?.Contains(department) == true;
+        }
+        else if (p is Client client)
+        {
+            return Clients?.Contains(client) == true;
+        }
+
+        return false;
+    }
 
 
     public WorkspaceWindowViewModel()
@@ -95,27 +117,14 @@ public class WorkspaceWindowViewModel : ViewModel
         CheckUserCommand = new LambdaCommand(OnCheckUserCommand,CanCheckUserCommand);
         ChangeUserCommand = new LambdaCommand(OnChangeUserCommand, CanChangeUserCommand);
         AddClientCommand = new LambdaCommand(OnAddClientCommand, CanAddClientCommand);
-        DeleteDepartmentCommand = new LambdaCommand(OnDeleteDepartmentCommand, CanDeleteDepartmentCommand);
-            
+        DeleteCommand = new LambdaCommand(OnDeleteCommand, CanDeleteCommand);
+        ClearDatabaseCommand = new LambdaCommand(OnClearDatabaseCommand, CanClearDatabaseCommand);
+        ClearClientsCommand = new LambdaCommand(OnClearClientsCommand, CanClearClientsCommand);
         //tests
         //TestDbCommand = new LambdaCommand(OnTestDbCommand, CanTestDbCommand);
     }
 
-    
-    private void OnDeleteDepartmentCommand(object p)
-    {
-        if (p is not Department department) return;
-        _context.Departments.Remove(department);
-
-        var depIndex = Departments!.IndexOf(department);
-        Departments.Remove(department);
-
-        if (depIndex < Departments.Count)
-            SelectedDepartment = Departments[depIndex];
-
-        if(!_context.Departments.Any()) CleareDatabase(_context);
-        _context.SaveChangesAsync();
-    }
+   
     private void OnChangeUserCommand(object p)
     {
         Extensions.Extensions.SetMainWindow(new MainWindow());
@@ -145,44 +154,137 @@ public class WorkspaceWindowViewModel : ViewModel
     {
         _addClient = new AddClient();
         _addClient.Closed += AddClient_Closed;
-        var addClientViewModel = new AddClientViewModel { SelectedDepartment = SelectedDepartment };
+        var addClientViewModel = new AddClientViewModel { SelectedDepartment = SelectedDepartment,};
         _addClient.DataContext = addClientViewModel;
         Extensions.Extensions.ShowDialog(_addClient);
     }
-
-    private void CleareDatabase(DataContext dataContext)
+    private async void OnClearDatabaseCommand(object p)
     {
+       await CleareDatabase(_context);
+    }
+
+    private async Task CleareDatabase(DataContext dataContext)
+    {
+        Departments!.Clear();
+        Clients!.Clear();
+        CountOfClients = 0;
+        CountOfDepartments = 0;
         dataContext.Database.ExecuteSqlRaw("DELETE FROM Departments");
         dataContext.Database.ExecuteSqlRaw("DELETE FROM Clients");
-
+        dataContext.Database.ExecuteSqlRaw("DELETE FROM sqlite_sequence WHERE name IN ('Departments', 'Clients')");
+        await dataContext.SaveChangesAsync();
     }
 
-    private void LoadDb()
+    private async Task LoadDb()
     {
-        Departments = new(_context.Departments.ToList()!);
+        Departments = new( await _context.Departments.ToListAsync()!);
         Departments.CollectionChanged += Departments_CollectionChanged!;
         CountOfDepartments = Departments.Count;
+
+        Clients = new(await _context.Clients.ToListAsync()!);
+        Clients.CollectionChanged += Clients_CollectionChanged;
+        CountOfClients = Clients.Count;
     }
 
+    private async void OnDeleteCommand(object p)
+    {
+        Delete(p);
+
+        if (!Departments!.Any())
+        {
+            await CleareDatabase(_context);
+        }
+    }
+
+    private void Delete<T>(T selectedObject)
+    {
+        switch (selectedObject)
+        {
+            case Department department:
+            {
+                ClearClients();
+                _context.Departments.Remove(department);
+                var depIndex = Departments!.IndexOf(department);
+                Departments.Remove(department);
+
+                if (depIndex < Departments.Count)
+                    SelectedDepartment = Departments[depIndex];
+
+                _context.SaveChangesAsync().ContinueWith(_ => LoadDb());
+                break;
+            }
+            case Client client:
+            {
+                var removedClientId = client.ClientId; // Сохраняем Id удаленного клиента
+
+                _context.Clients.Remove(client);
+                var clIndex = Clients!.IndexOf(client);
+                Clients.Remove(client);
+
+                if (clIndex < Clients.Count)
+                    SelectedClient = Clients[clIndex];
+                else if (Clients.Any())
+                    SelectedClient = Clients[Clients.Count - 1]; // Установка SelectedClient на последний оставшийся клиент
+
+                _context.SaveChangesAsync();
+
+                if (!Clients.Any())
+                    ClearClients();
+
+                if (selectedObject is Client)
+                {
+                    _context.Database.ExecuteSqlRaw($"UPDATE sqlite_sequence SET seq = {Clients.Count} WHERE name = 'Clients'");
+                } 
+                break;
+
+                }
+        }
+    }
+
+    private async void ClearClients()
+    {
+        if (Departments.Count == 1)
+        {
+            _context.Clients.RemoveRange(_context.Clients);
+            _context.Database.ExecuteSqlRaw("DELETE FROM sqlite_sequence WHERE name = 'Clients'");
+            await _context.SaveChangesAsync().ContinueWith(_ => LoadDb());
+        }
+        else if (SelectedDepartment != null)
+        {
+            var clientsToRemove = Clients.Where(c => c.DepartmentId == SelectedDepartment.Id).ToList();
+            foreach (var client in clientsToRemove)
+            {
+                _context.Clients.Remove(client);
+                Clients.Remove(client);
+            }
+
+            await _context.SaveChangesAsync().ContinueWith(_ => LoadDb());
+        }
+    }
+
+    #region Events
     private void Departments_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
     {
-        CountOfDepartments = Departments.Count;
+        CountOfDepartments = Departments!.Count;
     }
-    private void AddDepartment_Closed(object? sender, EventArgs e)
+    private async void AddDepartment_Closed(object? sender, EventArgs e)
     {
-        LoadDb();
+       await LoadDb();
     }
     private void Clients_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-
+        CountOfClients = Clients.Count;
     }
     private void MainWindowViewModel_SelectedRoleChanged(object sender, User selectedRole)
     {
-       CurrentUser = selectedRole;
-       OnPropertyChanged(nameof(IsManager));
+        CurrentUser = selectedRole;
+        OnPropertyChanged(nameof(IsManager));
     }
-    private void AddClient_Closed(object? sender, EventArgs e)
+
+    private async void AddClient_Closed(object? sender, EventArgs e)
     {
-        LoadDb();
+        await LoadDb();
     }
+    #endregion
+
 }

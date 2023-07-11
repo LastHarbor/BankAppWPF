@@ -8,7 +8,7 @@
         public string? Patronymic { get; set; }
         public string MobileNumber { get; set; }
         public string PassportNumber { get; set;}
-        public int DepartmentId { get; set; }
+        public int? DepartmentId { get; set; }
 
         public Department Department { get; set; }
         
