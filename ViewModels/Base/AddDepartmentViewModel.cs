@@ -11,21 +11,38 @@ public class AddDepartmentViewModel : ViewModel
 {
     private DataContext _context;
     private int _id;
+    private string _title;
+    private string? _departmentName;
+
+
+    public string Title
+    {
+        get => _title;
+        set => SetField(ref _title, value);
+    }
+
     public int Id
     {
         get => _id;
         set => SetField(ref _id, value);
     }
 
-    private string? _departmentName;
     public string? DepartmentName
     {
         get => _departmentName;
         set => SetField(ref _departmentName, value);
     }
 
-    
+    public ICommand CancelCommand { get; }
     public ICommand AddDepartmentCommand { get; }
+    private bool CanCancelCommand(object p) => true;
+    private bool CanAddDepartmentCommand(object p) => true;
+
+    public AddDepartmentViewModel()
+    {
+        CancelCommand = new LambdaCommand(OnCancelCommand, CanCancelCommand);
+        AddDepartmentCommand = new LambdaCommand(OnAddDepartmentCommand, CanAddDepartmentCommand);
+    }
     private void OnAddDepartmentCommand(object p)
     {
         var department = new Department()
@@ -40,13 +57,8 @@ public class AddDepartmentViewModel : ViewModel
         }
         Extensions.Extensions.CloseDialog();
     }
-    private bool CanAddDepartmentCommand(object p) => true;
-
-
-    public AddDepartmentViewModel()
+    private void OnCancelCommand(object p)
     {
-        AddDepartmentCommand = new LambdaCommand(OnAddDepartmentCommand, CanAddDepartmentCommand);
+        Extensions.Extensions.CloseDialog();
     }
-
-   
 }

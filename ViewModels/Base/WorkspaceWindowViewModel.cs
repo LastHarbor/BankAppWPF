@@ -10,6 +10,7 @@ using BankApp.Extensions;
 using BankApp.Models;
 using BankApp.Views.Windows;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 
 namespace BankApp.ViewModels.Base;
 
@@ -111,11 +112,9 @@ public class WorkspaceWindowViewModel : ViewModel
 
         public WorkspaceWindowViewModel()
         {
-            LoadDb();
             MainWindowViewModel.SelectedRoleChanged += MainWindowViewModel_SelectedRoleChanged!;
             //Commands
             AddDepartmentCommand = new LambdaCommand(OnAddDepartmentCommand, CanAddDepartmentCommand);
-            CheckUserCommand = new LambdaCommand(OnCheckUserCommand,CanCheckUserCommand);
             ChangeUserCommand = new LambdaCommand(OnChangeUserCommand, CanChangeUserCommand);
             AddClientCommand = new LambdaCommand(OnAddClientCommand, CanAddClientCommand);
             DeleteCommand = new LambdaCommand(OnDeleteCommand, CanDeleteCommand);
@@ -132,21 +131,12 @@ public class WorkspaceWindowViewModel : ViewModel
             CurrentUser = null;
         }
 
-        private void OnCheckUserCommand(object p)
-        {
-            if (CurrentUser is Consultant)
-            {
-                MessageBox.Show("Вы вошли под консультантом");
-            }
-            else if (CurrentUser is Manager)
-            {
-                MessageBox.Show("Вы вошли под менеджером");
-            }
-        }
 
         private void OnAddDepartmentCommand(object p)
         {
             _addDepartment = new ();
+            var addDepartmentViewModel = new AddDepartmentViewModel { Title = "Добавить" };
+            _addDepartment.DataContext = addDepartmentViewModel;
             _addDepartment.Closed += AddDepartment_Closed;
             Extensions.Extensions.ShowDialog(_addDepartment);
         }
@@ -155,7 +145,7 @@ public class WorkspaceWindowViewModel : ViewModel
         {
             _addClient = new AddClient();
             _addClient.Closed += AddClient_Closed;
-            var addClientViewModel = new AddClientViewModel { SelectedDepartment = SelectedDepartment,};
+            var addClientViewModel = new AddClientViewModel { SelectedDepartment = SelectedDepartment, Title = "Добавить"};
             _addClient.DataContext = addClientViewModel;
             Extensions.Extensions.ShowDialog(_addClient);
         }
@@ -204,20 +194,26 @@ public class WorkspaceWindowViewModel : ViewModel
                 case Department department:
                 {
                     ClearClients();
+
                     _context.Departments.Remove(department);
                     var depIndex = Departments!.IndexOf(department);
                     Departments.Remove(department);
 
                     if (depIndex < Departments.Count)
                         SelectedDepartment = Departments[depIndex];
+                    else if (Departments.Any())
+                        SelectedDepartment = Departments[^1];
+                    if (selectedObject is Department)
+                    {
+                        _context.Database.ExecuteSqlRaw($"UPDATE sqlite_sequence SET seq = {Departments.Count} WHERE name = 'Departments'");
+                    }
 
                     _context.SaveChangesAsync().ContinueWith(_ => LoadDb());
+
                     break;
                 }
                 case Client client:
                 {
-                    var removedClientId = client.ClientId; // Сохраняем Id удаленного клиента
-
                     _context.Clients.Remove(client);
                     var clIndex = Clients!.IndexOf(client);
                     Clients.Remove(client);
@@ -225,7 +221,7 @@ public class WorkspaceWindowViewModel : ViewModel
                     if (clIndex < Clients.Count)
                         SelectedClient = Clients[clIndex];
                     else if (Clients.Any())
-                        SelectedClient = Clients[Clients.Count - 1]; // Установка SelectedClient на последний оставшийся клиент
+                        SelectedClient = Clients[^1];
 
                     _context.SaveChangesAsync();
 
@@ -236,15 +232,15 @@ public class WorkspaceWindowViewModel : ViewModel
                     {
                         _context.Database.ExecuteSqlRaw($"UPDATE sqlite_sequence SET seq = {Clients.Count} WHERE name = 'Clients'");
                     } 
-                    break;
 
-                    }
+                    break;
+                }
             }
         }
 
         private async void ClearClients()
         {
-            if (Departments.Count == 1)
+            if (Departments!.Count == 1)
             {
                 _context.Clients.RemoveRange(_context.Clients);
                 _context.Database.ExecuteSqlRaw("DELETE FROM sqlite_sequence WHERE name = 'Clients'");
@@ -258,9 +254,11 @@ public class WorkspaceWindowViewModel : ViewModel
                     _context.Clients.Remove(client);
                     Clients.Remove(client);
                 }
+                //_context.Database.ExecuteSqlRaw($"UPDATE sqlite_sequence SET seq = {Clients.Count} WHERE name = 'Clients'");
 
-                await _context.SaveChangesAsync().ContinueWith(_ => LoadDb());
+            await _context.SaveChangesAsync().ContinueWith(_ => LoadDb());
             }
+            
         }
 
         #region Events
@@ -276,11 +274,12 @@ public class WorkspaceWindowViewModel : ViewModel
         {
             CountOfClients = Clients.Count;
         }
-        private void MainWindowViewModel_SelectedRoleChanged(object sender, User selectedRole)
+        private async void MainWindowViewModel_SelectedRoleChanged(object sender, User selectedRole)
         {
             CurrentUser = selectedRole;
             OnPropertyChanged(nameof(IsManager));
-        }
+            await LoadDb();
+    }
 
         private async void AddClient_Closed(object? sender, EventArgs e)
         {

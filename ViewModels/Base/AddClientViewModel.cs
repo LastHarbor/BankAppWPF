@@ -11,8 +11,13 @@ public class AddClientViewModel : ViewModel
 {
     private DataContext _context;
     private Department _selectedDepartment;
-    private int _depId;
+    private string _title;
 
+    public string Title
+    {
+        get => _title;
+        set => SetField(ref _title, value);
+    }
 
     public Department SelectedDepartment
     {
@@ -22,7 +27,6 @@ public class AddClientViewModel : ViewModel
     public int DepId
     {
         get => SelectedDepartment.Id;
-        set => _depId = value;
     }
 
 
@@ -78,8 +82,22 @@ public class AddClientViewModel : ViewModel
 
     #endregion
 
+    public ICommand CancelCommand { get; }
     public ICommand AddClientCommand { get; }
 
+    private bool CanAddClientCommand(object p) => true;
+    private bool CanCancelCommand(object p) => true;
+
+    private void OnCancelCommand(object p)
+    {
+        Extensions.Extensions.CloseDialog();
+    }
+
+    public AddClientViewModel()
+    {
+        AddClientCommand = new LambdaCommand(OnAddClientCommand, CanAddClientCommand);
+        CancelCommand = new LambdaCommand(OnCancelCommand, CanCancelCommand);
+    }
     private void OnAddClientCommand(object p)
     {
         Client newClient = new Client()
@@ -91,7 +109,7 @@ public class AddClientViewModel : ViewModel
             MobileNumber = MobileNumber,
             PassportNumber = PassportNum,
             DepartmentId = DepId,
-            
+
         };
         using (_context = new DataContext())
         {
@@ -101,12 +119,7 @@ public class AddClientViewModel : ViewModel
         Extensions.Extensions.CloseDialog();
     }
 
-    private bool CanAddClientCommand(object p) => true;
 
-   
 
-    public AddClientViewModel()
-    {
-        AddClientCommand = new LambdaCommand(OnAddClientCommand, CanAddClientCommand);
-    }
 }
+

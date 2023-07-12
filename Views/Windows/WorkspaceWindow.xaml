@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:base ="clr-namespace:BankApp.ViewModels.Base"
+        xmlns:fa="http://schemas.fontawesome.io/icons/"
         mc:Ignorable="d"
         Title="{Binding CurrentUser.Name, FallbackValue='None'}"
         Height="450" 
@@ -36,15 +37,16 @@
                 </GroupBox.Header>
                 <DockPanel>
                     <UniformGrid DockPanel.Dock="Bottom" Rows="1">
-                        <Button Content="Добавить" Command="{Binding AddDepartmentCommand}"
+                        <Button fa:Awesome.Content="Plus" Command="{Binding AddDepartmentCommand}"
                                 IsEnabled="{Binding IsManager}"/>
-                        <Button Content="Удалить" Command="{Binding DeleteCommand}"
+                        <Button fa:Awesome.Content ="Pencil" />
+                        <Button fa:Awesome.Content="Trash" Command="{Binding DeleteCommand}"
                                 CommandParameter="{Binding SelectedDepartment}"
                                 IsEnabled="{Binding IsManager}"/>
                     </UniformGrid>
                     <ListBox ItemsSource="{Binding Departments}"
                              DisplayMemberPath="Name"
-                             SelectedItem="{Binding SelectedDepartment, Mode=TwoWay}">
+                             SelectedItem="{Binding SelectedDepartment, Mode=TwoWay}" Height="373">
                     </ListBox>
                 </DockPanel>
             </GroupBox>
@@ -61,21 +63,21 @@
                                 <Run Text="{Binding CountOfClients}"/>
                             </TextBlock>
                         </TextBlock>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
-                            <Button Content="Добавить" 
+                        <UniformGrid Rows="1">
+                            <Button fa:Awesome.Content="Plus" 
                                     Command="{Binding AddClientCommand}"
                                     CommandParameter="{Binding SelectedDepartment}"
                                     IsEnabled="{Binding IsManager}"/>
-                            <Button Content="Удалить"
+                            <Button fa:Awesome.Content="Trash"
                                     Command="{Binding DeleteCommand}"
                                     CommandParameter="{Binding  SelectedClient}"
                                     IsEnabled="{Binding IsManager}"/>
-                            <Button Content="Очистить и сохранить"
+                            <Button Content="Удалить всех клиентов"
                                     Command="{Binding ClearClientsCommand}"
                                     CommandParameter="{Binding SelectedDepartment}"
-                                    IsEnabled="{Binding IsManager}"
-                                    />
-                        </StackPanel>
+                                    IsEnabled="{Binding IsManager}"/>
+                            
+                        </UniformGrid>
                     </StackPanel>
                 </GroupBox.Header>
                 <DataGrid 
@@ -89,7 +91,7 @@
                                             IsReadOnly="True"/>
                         <DataGridTextColumn Header="Имя" Binding="{Binding Name}"/>
                         <DataGridTextColumn Header="Фамилия" Binding="{Binding Surname}"/>
-                        <DataGridTextColumn Header="Отчество" Binding="{Binding Patronimyc}"/>
+                        <DataGridTextColumn Header="Отчество" Binding="{Binding Patronymic}"/>
                         <DataGridTextColumn Header="Моб. Номер" Binding="{Binding MobileNumber}"/>
                         <DataGridTextColumn Header="Номер пасспорта" Binding="{Binding PassportNumber}"/>
                         <DataGridTextColumn Header="Департамент" Binding="{Binding DataContext.SelectedDepartment.Name, 
